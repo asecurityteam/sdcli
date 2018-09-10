@@ -4,4 +4,7 @@
 
 ## Installation
 
-`go install bitbucket.org/asecurityteam/sdcli`
+```
+go get bitbucket.org/asecurityteam/sdcli
+go install bitbucket.org/asecurityteam/sdcli
+```
