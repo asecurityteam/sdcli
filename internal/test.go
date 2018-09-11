@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cmd
+package internal
 
 import (
 	"fmt"
@@ -20,31 +20,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// lintCmd represents the lint command
-var lintCmd = &cobra.Command{
-	Use:   "lint",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
+// testCmd represents the test command
+func testCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "test",
+		Short: "A brief description of your command",
+		Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("lint called")
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(lintCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// lintCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// lintCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("test called")
+		},
+	}
 }
