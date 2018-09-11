@@ -14,8 +14,9 @@
 
 package main
 
-import "bitbucket.org/asecurityteam/sdcli/cmd"
+import "bitbucket.org/asecurityteam/sdcli/internal"
 
 func main() {
-	cmd.Execute()
+	internal.InitRoot()
+	internal.Execute()
 }
