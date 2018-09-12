@@ -37,6 +37,18 @@
   name = "github.com/spf13/viper"
   version = "1.2.0"
 
+[[constraint]]
+  name = "github.com/fatih/color"
+  version = "^v1.7.0"
+
+[[constraint]]
+  name = "github.com/Masterminds/semver"
+  version = "^v1.4.0"
+
+[[constraint]]
+  name = "github.com/stretchr/testify"
+  version = "^v1.2.0"
+
 [prune]
   go-tests = true
   unused-packages = true

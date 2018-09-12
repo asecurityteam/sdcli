@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 
+	"bitbucket.org/asecurityteam/sdcli/internal/check"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -41,6 +42,7 @@ func Execute() {
 	}
 }
 
+// InitRoot initializes the root command with all available sub commands and flags
 func InitRoot() {
 	cobra.OnInitialize(initConfig)
 
@@ -60,6 +62,7 @@ func InitRoot() {
 	RootCmd.AddCommand(lintCmd())
 	RootCmd.AddCommand(runCmd())
 	RootCmd.AddCommand(testCmd())
+	RootCmd.AddCommand(check.NewCommand().Command)
 }
 
 // initConfig reads in config file and ENV variables if set.
