@@ -15,10 +15,10 @@ micros command not found.  Is it installed?
 micros is the Atlassian PaaS we use to manage AWS microservices.
 
 For general information about micros, see:
-    https://extranet.atlassian.com/display/MICROS/Micros
+    https://hello.atlassian.net/wiki/spaces/MICROS/overview
 
 For installation instructions, see:
-    https://extranet.atlassian.com/display/MICROS/Micros+CLI`
+    https://hello.atlassian.net/wiki/spaces/MICROS/pages/167212704/Micros+CLI`
 
 	oldMicrosVersionTpl = `
 Your micros version is %s.  You need to update micros so it is at
@@ -28,7 +28,7 @@ Most likely, all you need to do is run:
     npm install -g @atlassian/micros-cli
 
 But see the confluence page for details:
-    https://extranet.atlassian.com/display/MICROS/Micros+CLI`
+    https://hello.atlassian.net/wiki/spaces/MICROS/pages/167212704/Micros+CLI`
 )
 
 // MicrosChecker is a checker that verifies that the micros cli tool is
