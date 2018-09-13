@@ -10,7 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const long = `Check runs a series of checks, verifying the proper tools are installed, and that the proper version of those tools are installed.
+const long = `
+Check runs a series of checks, verifying the proper tools are installed, and that the proper version of those tools are installed.
 The following items are checked:
     * git cli is installed along with necessary access to Bitbucket
     * Google-golang at an accepted version
@@ -45,7 +46,9 @@ func NewCommand() *Command {
 
 	// register new checkers here
 	var r = runner.ExecRunner{}
+	cmd.checks = append(cmd.checks, commands.NewBitbucketChecker(r))
 	cmd.checks = append(cmd.checks, commands.NewGoChecker(r))
+	cmd.checks = append(cmd.checks, commands.NewMicrosChecker(r))
 
 	return cmd
 }
