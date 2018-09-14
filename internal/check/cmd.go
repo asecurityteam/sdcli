@@ -18,7 +18,9 @@ The following items are checked:
     * Micros CLI (and authentication)
     * Laas CLI (and authentication)
     * Docker is installed at an accepted version
-    * Authenticated with docker.atl-paas.net`
+    * Authenticated with docker.atl-paas.net
+		* dep is installed at an accepted version
+		* golangci-linter is installed`
 
 type checker interface {
 	// Check function will check a specific developer dependency
@@ -53,6 +55,7 @@ func NewCommand() *Command {
 	cmd.checks = append(cmd.checks, commands.NewDockerChecker(r))
 	cmd.checks = append(cmd.checks, commands.NewRegistryChecker(r))
 	cmd.checks = append(cmd.checks, commands.NewDepChecker(r))
+	cmd.checks = append(cmd.checks, commands.NewLinterChecker(r))
 
 	return cmd
 }
