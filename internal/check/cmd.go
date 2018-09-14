@@ -52,6 +52,7 @@ func NewCommand() *Command {
 	cmd.checks = append(cmd.checks, commands.NewLaasChecker(r))
 	cmd.checks = append(cmd.checks, commands.NewDockerChecker(r))
 	cmd.checks = append(cmd.checks, commands.NewRegistryChecker(r))
+	cmd.checks = append(cmd.checks, commands.NewDepChecker(r))
 
 	return cmd
 }
