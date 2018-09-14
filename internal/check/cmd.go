@@ -50,6 +50,7 @@ func NewCommand() *Command {
 	cmd.checks = append(cmd.checks, commands.NewGoChecker(r))
 	cmd.checks = append(cmd.checks, commands.NewMicrosChecker(r))
 	cmd.checks = append(cmd.checks, commands.NewLaasChecker(r))
+	cmd.checks = append(cmd.checks, commands.NewDockerChecker(r))
 
 	return cmd
 }
