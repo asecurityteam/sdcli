@@ -2,14 +2,6 @@
 
 
 [[projects]]
-  digest = "1:80ad29a47b835b4207fe8866fad1c130d88b17bc624cdadbdf1307bef9a2aec7"
-  name = "bitbucket.org/hipchat/ng"
-  packages = ["nglib"]
-  pruneopts = "UT"
-  revision = "dded64635268e595b6641672231bc208ac7fd66d"
-  version = "v1.1.0"
-
-[[projects]]
   digest = "1:55388fd080150b9a072912f97b1f5891eb0b50df43401f8b75fb4273d3fec9fc"
   name = "github.com/Masterminds/semver"
   packages = ["."]
@@ -245,7 +237,6 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "bitbucket.org/hipchat/ng/nglib",
     "github.com/Masterminds/semver",
     "github.com/fatih/color",
     "github.com/golang/mock/gomock",

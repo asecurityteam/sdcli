@@ -51,6 +51,7 @@ func NewCommand() *Command {
 	cmd.checks = append(cmd.checks, commands.NewMicrosChecker(r))
 	cmd.checks = append(cmd.checks, commands.NewLaasChecker(r))
 	cmd.checks = append(cmd.checks, commands.NewDockerChecker(r))
+	cmd.checks = append(cmd.checks, commands.NewRegistryChecker(r))
 
 	return cmd
 }
@@ -61,7 +62,7 @@ func (c *Command) run(cmd *cobra.Command, args []string) {
 		fmt.Fprintf(out, "Checking %s... ", check.Name())
 		switch err := check.Check(); err.(type) {
 		case nil:
-			output.Check(out, "ok")
+			output.Pass(out, "ok")
 		case *commands.CheckerFailure:
 			var msg = indentBlock(err.Error()+"\n", "    ")
 			output.Fail(out, "failure")
