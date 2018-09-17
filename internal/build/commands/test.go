@@ -6,11 +6,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Integration bool
-var Coverage bool
-
 // TestCommand returns a new check command
 func TestCommand() *cobra.Command {
+	var Integration, Coverage bool
+
 	command := &cobra.Command{
 		Use:   "test",
 		Short: "run unit/integration tests and generate coverage reports",
