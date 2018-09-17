@@ -53,8 +53,6 @@ func InitRoot() {
 
 	// Register subcommands
 	RootCmd.AddCommand(build.NewCommand())
-	RootCmd.AddCommand(depCmd())
-	RootCmd.AddCommand(deployCmd())
 	RootCmd.AddCommand(lintCmd())
 	RootCmd.AddCommand(runCmd())
 	RootCmd.AddCommand(testCmd())
