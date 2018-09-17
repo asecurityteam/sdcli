@@ -10,7 +10,7 @@ func TestDepCommand(t *testing.T) {
 	depCommand := depCmd()
 
 	depCommand.SetOutput(&out)
-	depCommand.Execute()
+	_ = depCommand.Execute()
 
 	result := out.String()
 	if result != "dep called, no args" {
@@ -24,7 +24,7 @@ func TestDepCommandWithArg(t *testing.T) {
 
 	depCommand.SetOutput(&out)
 	depCommand.SetArgs([]string{"arg1"})
-	depCommand.Execute()
+	_ = depCommand.Execute()
 
 	result := out.String()
 	expected := "dep called with arg1"
