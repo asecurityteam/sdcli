@@ -3,76 +3,106 @@ package commands
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
 
+	"bitbucket.org/asecurityteam/sdcli/internal/runner"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
-func DeployCommand() *cobra.Command {
-	var name, serviceDescriptor string
+const (
+	nameFlag = "name"
+	fileFlag = "file"
+)
 
-	command := &cobra.Command{
-		Use:   "deploy",
-		Short: "push to docker registry and micros",
-		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			nameSplit := strings.Split(name, ":")
-			if len(nameSplit) != 2 {
-				cmd.Printf("%s must be formatted as <name>:<tag>\n", name)
-			}
-			image := nameSplit[0]
-			tag := nameSplit[1]
+type DeployCommand struct {
+	*cobra.Command
+	r runner.Runner
+}
 
-			buildOutput, err := BuildContainer(name)
-			if err != nil {
-				cmd.Printf("Error building Docker image: %s\n", buildOutput)
-				os.Exit(1)
-			}
-
-			dockerOutput, err := exec.Command("docker", "push", name).CombinedOutput()
-			if err != nil {
-				cmd.Printf("Error pushing %s: %s\n", name, dockerOutput)
-				os.Exit(1)
-			}
-
-			cmd.Printf("Successfully pushed %s\n", name)
-
-			if _, err := os.Stat(serviceDescriptor); os.IsNotExist(err) {
-				cmd.Printf("%s does not exist\n", serviceDescriptor)
-				os.Exit(1)
-			}
-
-			serviceName := args[0]
-			cmd.Printf("Preparing to deploy %s", serviceName)
-			microsCmd := exec.Command("micros", "service:deploy", serviceName, "-f", serviceDescriptor)
-			microsCmd.Env = append(os.Environ(),
-				fmt.Sprintf("DOCKER_IMAGE=%s", image),
-				fmt.Sprintf("DOCKER_TAG=%s", tag))
-			microsOutput, err := microsCmd.CombinedOutput()
-			if err != nil {
-				cmd.Printf("Error deploying %s to micros: %s\n", serviceName, microsOutput)
-				os.Exit(1)
-			}
-
-			cmd.Printf("Successfully deployed %s\n", serviceName)
-			os.Exit(0)
+func NewDeployCommand(r runner.Runner) *DeployCommand {
+	deployCmd := &DeployCommand{
+		r: r,
+		Command: &cobra.Command{
+			Use:   "deploy",
+			Short: "push to docker registry and micros",
+			Args:  cobra.ExactArgs(1),
 		},
 	}
 
-	command.Flags().StringVarP(&name, "name", "n", "", "image name (required)")
-	command.MarkFlagRequired("name")
-	command.Flags().StringVarP(&serviceDescriptor, "file", "f", "", "service descriptor file (required)")
-	command.MarkFlagRequired("file")
+	deployCmd.Run = deployCmd.run
 
-	return command
+	deployCmd.Command.Flags().StringP(nameFlag, "n", "", "image name (required)")
+	deployCmd.Command.MarkFlagRequired(nameFlag)
+	deployCmd.Command.Flags().StringP(fileFlag, "f", "", "service descriptor file (required)")
+	deployCmd.Command.MarkFlagRequired(fileFlag)
+
+	return deployCmd
 }
 
-func BuildContainer(tag string) ([]byte, error) {
+func (d *DeployCommand) run(cmd *cobra.Command, args []string) {
+	serviceName := args[0]
+	name, err := cmd.Flags().GetString(nameFlag)
+	if err != nil {
+		cmd.Printf("Error getting name flag: %s", err.Error())
+		os.Exit(1)
+	}
+	file, err := cmd.Flags().GetString(fileFlag)
+	if err != nil {
+		cmd.Printf("Error getting file flag: %s", err.Error())
+		os.Exit(1)
+	}
+
+	if err = d.Deploy(name, serviceName, file); err != nil {
+		cmd.Printf("Error deploying %s: %s", name, err.Error())
+		os.Exit(1)
+	}
+
+	cmd.Printf("Successfully deployed %s\n", serviceName)
+	os.Exit(0)
+}
+
+func (d *DeployCommand) Deploy(image, serviceName, serviceDescriptor string) error {
+	nameSplit := strings.Split(image, ":")
+	if len(nameSplit) != 2 {
+		return errors.Errorf("%s must be formatted as <name>:<tag>\n", image)
+	}
+	name := nameSplit[0]
+	tag := nameSplit[1]
+
+	_, err := BuildContainer(d.r, image)
+	if err != nil {
+		return errors.Wrap(err, "error building Docker image")
+	}
+
+	_, err = d.r.Run("docker", "push", image)
+	if err != nil {
+		return errors.Wrap(err, "error pushing docker image")
+	}
+
+	if _, err := os.Stat(serviceDescriptor); os.IsNotExist(err) {
+		return errors.Wrap(err, "service descriptor file does not exist\n")
+	}
+
+	_, err = d.r.RunEnv(
+		[]string{fmt.Sprintf("DOCKER_IMAGE=%s", name), fmt.Sprintf("DOCKER_TAG=%s", tag)},
+		"micros",
+		"service:deploy",
+		serviceName,
+		"-f",
+		serviceDescriptor,
+	)
+	if err != nil {
+		return errors.Wrap(err, "error deploying to micros\n")
+	}
+	return nil
+}
+
+func BuildContainer(r runner.Runner, image string) ([]byte, error) {
 	dockerBuildCmd := []string{"build"}
-	if tag != "" {
-		dockerBuildCmd = append(dockerBuildCmd, []string{"-t", tag}...)
+	if image != "" {
+		dockerBuildCmd = append(dockerBuildCmd, []string{"-t", image}...)
 	}
 	dockerBuildCmd = append(dockerBuildCmd, ".")
-	return exec.Command("docker", dockerBuildCmd...).CombinedOutput()
+	return r.Run("docker", dockerBuildCmd...)
 }
