@@ -19,30 +19,27 @@ It handles:
 // buildCmd represents the build command
 func NewCommand() *cobra.Command {
 	var r = runner.ExecRunner{}
+	var d = commands.NewDocker(r)
 	command := &cobra.Command{
 		Use:   "build",
 		Short: "installs project dependencies, runs tests, and performs Docker builds",
 		Long:  long,
 		Run: func(cmd *cobra.Command, args []string) {
-			serviceName := args[0]
-			tag, err := cmd.Flags().GetString("tag")
+			service, err := commands.NewService(r, true, nil)
 			if err != nil {
-				cmd.Printf("Error getting tag flag: %s", err.Error())
+				cmd.Printf("Error initializing service: %s\n", err.Error())
 				os.Exit(1)
 			}
-			output, err := commands.BuildContainer(runner, tag)
-			if err != nil {
-				cmd.Printf("Error building Docker image: %s\n", output)
+			if err = d.BuildImage(service); err != nil {
+				cmd.Printf("Error building Docker image: %s\n", err.Error())
 				os.Exit(1)
 			}
 			os.Exit(0)
 		},
 	}
 
-	command.Flags().StringP("tag", "t", "", "Docker image tag")
-
 	command.AddCommand(commands.DepCommand())
 	command.AddCommand(commands.TestCommand())
-	command.AddCommand(commands.NewDeployCommand(r).Command)
+	command.AddCommand(commands.NewDeployCommand(r, d).Command)
 	return command
 }
