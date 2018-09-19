@@ -62,7 +62,7 @@ func InitRoot() {
 	RootCmd.AddCommand(lintCmd())
 	RootCmd.AddCommand(runCmd())
 	RootCmd.AddCommand(testCmd())
-	RootCmd.AddCommand(check.NewCommand().Command)
+	RootCmd.AddCommand(check.NewCommand())
 }
 
 // initConfig reads in config file and ENV variables if set.

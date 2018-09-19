@@ -29,52 +29,44 @@ type checker interface {
 	Name() string
 }
 
-// Command is a struct representing the command which executes all of the development environment checks
-type Command struct {
-	*cobra.Command
-	checks []checker
-}
-
 // NewCommand returns a new check command
-func NewCommand() *Command {
-	var cmd = &Command{
-		Command: &cobra.Command{
-			Use:   "check",
-			Short: "Checks to see if the environment of the current machine satisfies SecDev requirements.",
-			Long:  long,
-		},
-	}
-	cmd.Run = cmd.run
-
-	// register new checkers here
+func NewCommand() *cobra.Command {
+	var checks []checker
 	var r = runner.ExecRunner{}
-	cmd.checks = append(cmd.checks, commands.NewBitbucketChecker(r))
-	cmd.checks = append(cmd.checks, commands.NewGoChecker(r))
-	cmd.checks = append(cmd.checks, commands.NewMicrosChecker(r))
-	cmd.checks = append(cmd.checks, commands.NewLaasChecker(r))
-	cmd.checks = append(cmd.checks, commands.NewDockerChecker(r))
-	cmd.checks = append(cmd.checks, commands.NewRegistryChecker(r))
-	cmd.checks = append(cmd.checks, commands.NewDepChecker(r))
-	cmd.checks = append(cmd.checks, commands.NewLinterChecker(r))
+	checks = append(checks, commands.NewBitbucketChecker(r))
+	checks = append(checks, commands.NewGoChecker(r))
+	checks = append(checks, commands.NewMicrosChecker(r))
+	checks = append(checks, commands.NewLaasChecker(r))
+	checks = append(checks, commands.NewDockerChecker(r))
+	checks = append(checks, commands.NewRegistryChecker(r))
+	checks = append(checks, commands.NewDepChecker(r))
+	checks = append(checks, commands.NewLinterChecker(r))
 
-	return cmd
+	return &cobra.Command{
+		Use:   "check",
+		Short: "Checks to see if the environment of the current machine satisfies SecDev requirements.",
+		Long:  long,
+		Run:   runChecks(checks),
+	}
 }
 
-func (c *Command) run(cmd *cobra.Command, args []string) {
-	var out = c.OutOrStdout()
-	for _, check := range c.checks {
-		fmt.Fprintf(out, "Checking %s... ", check.Name())
-		switch err := check.Check(); err.(type) {
-		case nil:
-			output.Pass(out, "ok")
-		case *commands.CheckerFailure:
-			var msg = indentBlock(err.Error()+"\n", "    ")
-			output.Fail(out, "failure")
-			fmt.Println(msg)
-		default:
-			var msg = indentBlock(err.Error()+"\n", "    ")
-			output.Fail(out, "error")
-			fmt.Fprintln(out, msg)
+func runChecks(checks []checker) func(*cobra.Command, []string) {
+	return func(cmd *cobra.Command, args []string) {
+		var out = cmd.OutOrStdout()
+		for _, check := range checks {
+			fmt.Fprintf(out, "Checking %s... ", check.Name())
+			switch err := check.Check(); err.(type) {
+			case nil:
+				output.Pass(out, "ok")
+			case *commands.CheckerFailure:
+				var msg = indentBlock(err.Error()+"\n", "    ")
+				output.Fail(out, "failure")
+				fmt.Println(msg)
+			default:
+				var msg = indentBlock(err.Error()+"\n", "    ")
+				output.Fail(out, "error")
+				fmt.Fprintln(out, msg)
+			}
 		}
 	}
 }
