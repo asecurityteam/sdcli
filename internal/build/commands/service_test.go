@@ -13,7 +13,7 @@ import (
 )
 
 func TestGetServiceAndImageName(t *testing.T) {
-	var tc = []struct {
+	tc := []struct {
 		Name                string
 		IsDev               bool
 		ServiceDescriptor   string
@@ -38,8 +38,8 @@ func TestGetServiceAndImageName(t *testing.T) {
 
 	for _, test := range tc {
 		t.Run(test.Name, func(tt *testing.T) {
-			var runner = runner.ExecRunner{}
-			var serviceGenerator = newServiceGenerator(runner, test.IsDev, nil)
+			runner := runner.ExecRunner{}
+			serviceGenerator := newServiceGenerator(runner, test.IsDev, nil)
 
 			serviceName := serviceGenerator.GetServiceName(test.ServiceDescriptor)
 			require.Equal(tt, test.ExpectedServiceName, serviceName)
@@ -51,7 +51,7 @@ func TestGetServiceAndImageName(t *testing.T) {
 }
 
 func TestGetServiceDescriptor(t *testing.T) {
-	var tc = []struct {
+	tc := []struct {
 		Name                      string
 		GlobFuncResults           []string
 		GlobFuncErr               error
@@ -82,8 +82,8 @@ func TestGetServiceDescriptor(t *testing.T) {
 				return test.GlobFuncResults, test.GlobFuncErr
 			}
 
-			var runner = runner.ExecRunner{}
-			var serviceGenerator = newServiceGenerator(runner, false, globFunc)
+			runner := runner.ExecRunner{}
+			serviceGenerator := newServiceGenerator(runner, false, globFunc)
 			actualServiceDescriptor, err := serviceGenerator.GetServiceDescriptor()
 
 			require.Equal(tt, test.ExpectedServiceDescriptor, actualServiceDescriptor)
@@ -95,7 +95,7 @@ func TestGetServiceDescriptor(t *testing.T) {
 }
 
 func TestGetTag(t *testing.T) {
-	var tc = []struct {
+	tc := []struct {
 		Name                  string
 		IsDev                 bool
 		UncommittedChangesErr error
@@ -127,11 +127,11 @@ func TestGetTag(t *testing.T) {
 
 	for _, test := range tc {
 		t.Run(test.Name, func(tt *testing.T) {
-			var ctrl = gomock.NewController(t)
+			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			var mockRunner = mocks.NewMockRunner(ctrl)
-			var serviceGenerator = newServiceGenerator(mockRunner, test.IsDev, nil)
+			mockRunner := mocks.NewMockRunner(ctrl)
+			serviceGenerator := newServiceGenerator(mockRunner, test.IsDev, nil)
 
 			mockRunner.EXPECT().Run("git", "diff", "--cached", "--quiet").Return(nil, test.UncommittedChangesErr)
 			mockRunner.EXPECT().Run("git", "rev-parse", "--short", "HEAD").Return([]byte(test.Hash), test.HashErr)
@@ -147,11 +147,11 @@ func TestGetTag(t *testing.T) {
 }
 
 func TestGetTagForDevBuildWithUncommitedChanges(t *testing.T) {
-	var ctrl = gomock.NewController(t)
+	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	var mockRunner = mocks.NewMockRunner(ctrl)
-	var serviceGenerator = newServiceGenerator(mockRunner, true, nil)
+	mockRunner := mocks.NewMockRunner(ctrl)
+	serviceGenerator := newServiceGenerator(mockRunner, true, nil)
 
 	currentUser, err := user.Current()
 	if err != nil {

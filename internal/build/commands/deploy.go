@@ -46,13 +46,10 @@ func (d *DeployCommand) run(cmd *cobra.Command, args []string) {
 	}
 
 	cmd.Printf("Successfully deployed %s\n", service.ServiceName)
-	os.Exit(0)
 }
 
 func (d *DeployCommand) Deploy(service *Service) error {
-	var err error
-
-	if err = d.docker.BuildImage(service); err != nil {
+	if err := d.docker.BuildImage(service); err != nil {
 		return errors.Wrap(err, "error building docker image")
 	}
 

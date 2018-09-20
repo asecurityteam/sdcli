@@ -18,8 +18,8 @@ It handles:
 
 // buildCmd represents the build command
 func NewCommand() *cobra.Command {
-	var r = runner.ExecRunner{}
-	var d = commands.NewDocker(r)
+	r := runner.ExecRunner{}
+	d := commands.NewDocker(r)
 	command := &cobra.Command{
 		Use:   "build",
 		Short: "installs project dependencies, runs tests, and performs Docker builds",
@@ -34,7 +34,6 @@ func NewCommand() *cobra.Command {
 				cmd.Printf("Error building Docker image: %s\n", err.Error())
 				os.Exit(1)
 			}
-			os.Exit(0)
 		},
 	}
 

@@ -18,7 +18,6 @@ func DepCommand() *cobra.Command {
 				cmd.Printf("Error ensuring dependencies: %s\n", output)
 				os.Exit(1)
 			}
-			os.Exit(0)
 		},
 	}
 }

@@ -89,16 +89,17 @@ func (s *ServiceGenerator) GetImageName(serviceName string) string {
 
 func (s *ServiceGenerator) GetTag() (string, error) {
 	var hasUncommittedChanges bool
-	var tag string
 	_, err := s.r.Run("git", "diff", "--cached", "--quiet")
 	if err != nil {
 		hasUncommittedChanges = true
 	}
+
 	hash, err := s.r.Run("git", "rev-parse", "--short", "HEAD")
 	if err != nil {
 		return "", errors.Wrap(err, "error fetching hash")
 	}
-	tag = strings.TrimSpace(string(hash))
+
+	tag := strings.TrimSpace(string(hash))
 
 	if s.isDev {
 		if hasUncommittedChanges {

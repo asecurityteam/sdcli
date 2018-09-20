@@ -6,23 +6,35 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	IntegrationFlag = "integration"
+	CoverageFlag    = "coverage"
+)
+
 // TestCommand returns a new check command
 func TestCommand() *cobra.Command {
-	var Integration, Coverage bool
-
 	command := &cobra.Command{
 		Use:   "test",
 		Short: "run unit/integration tests and generate coverage reports",
 		Run: func(cmd *cobra.Command, args []string) {
+			integration, err := cmd.Flags().GetBool(IntegrationFlag)
+			if err != nil {
+				cmd.Printf("Error getting integration flag: %s", err.Error())
+			}
+			coverage, err := cmd.Flags().GetBool(CoverageFlag)
+			if err != nil {
+				cmd.Printf("Error getting coverage flag: %s", err.Error())
+			}
+
 			testFlags := []string{"test", "-race", "-v", "-cover"}
 
-			if Coverage {
+			if coverage {
 				testFlags = []string{"test", "-coverprofile", "cover.out", "./..."}
 				exec.Command("go", testFlags...).CombinedOutput()
 				coverageOutput, _ := exec.Command("go", "tool", "cover", "-func=coverage.out").CombinedOutput()
 				cmd.Printf("%s\n", coverageOutput)
 			} else {
-				if Integration {
+				if integration {
 					testFlags = append(testFlags, "-tags=integration")
 				}
 				testFlags = append(testFlags, "./...")
@@ -32,8 +44,8 @@ func TestCommand() *cobra.Command {
 		},
 	}
 
-	command.Flags().BoolVarP(&Integration, "integration", "i", false, "Run integration tests")
-	command.Flags().BoolVarP(&Coverage, "coverage", "c", false, "Display coverage")
+	command.Flags().BoolP(IntegrationFlag, "i", false, "Run integration tests")
+	command.Flags().BoolP(CoverageFlag, "c", false, "Display coverage")
 
 	return command
 }

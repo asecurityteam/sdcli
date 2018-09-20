@@ -17,12 +17,12 @@ func TestDeployCommand(t *testing.T) {
 		ServiceDescriptor: "my-service.sd.yml",
 	}
 
-	var ctrl = gomock.NewController(t)
+	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	var mockRunner = mocks.NewMockRunner(ctrl)
-	var docker = NewDocker(mockRunner)
-	var deployCmd = NewDeployCommand(mockRunner, docker)
+	mockRunner := mocks.NewMockRunner(ctrl)
+	docker := NewDocker(mockRunner)
+	deployCmd := NewDeployCommand(mockRunner, docker)
 
 	mockRunner.EXPECT().Run("docker", "build", "-t", "my-image-name:12345", ".").Return(nil, nil)
 	mockRunner.EXPECT().Run("docker", "push", "my-image-name:12345").Return(nil, nil)
