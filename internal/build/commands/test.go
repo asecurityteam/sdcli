@@ -3,6 +3,7 @@ package commands
 import (
 	"os/exec"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -16,14 +17,14 @@ func TestCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   "test",
 		Short: "run unit/integration tests and generate coverage reports",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			integration, err := cmd.Flags().GetBool(IntegrationFlag)
 			if err != nil {
-				cmd.Printf("Error getting integration flag: %s", err.Error())
+				return errors.Wrap(err, "error getting integration flag")
 			}
 			coverage, err := cmd.Flags().GetBool(CoverageFlag)
 			if err != nil {
-				cmd.Printf("Error getting coverage flag: %s", err.Error())
+				return errors.Wrap(err, "error getting coverage flag")
 			}
 
 			testFlags := []string{"test", "-race", "-v", "-cover"}
@@ -41,6 +42,7 @@ func TestCommand() *cobra.Command {
 				testOutput, _ := exec.Command("go", testFlags...).CombinedOutput()
 				cmd.Printf("%s\n", testOutput)
 			}
+			return nil
 		},
 	}
 

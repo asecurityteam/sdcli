@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"os"
 
 	"bitbucket.org/asecurityteam/sdcli/internal/runner"
 	"github.com/pkg/errors"
@@ -25,27 +24,27 @@ func NewDeployCommand(r runner.Runner, docker *Docker) *DeployCommand {
 		},
 	}
 
-	deployCmd.Run = deployCmd.run
+	deployCmd.RunE = deployCmd.run
 
 	return deployCmd
 }
 
-func (d *DeployCommand) run(cmd *cobra.Command, args []string) {
+func (d *DeployCommand) run(cmd *cobra.Command, args []string) error {
 	service, err := NewService(d.r, false, nil)
 	if err != nil {
-		cmd.Printf("Error initializing service: %s\n", err.Error())
+		return errors.Wrap(err, "error initializing service")
 	}
 
 	if err = d.docker.BuildImage(service); err != nil {
-		cmd.Printf("Error building image %s: %s\n", service.Image, err.Error())
-		os.Exit(1)
+		return errors.Wrap(err, "error building image")
 	}
 
 	if err = d.Deploy(service); err != nil {
-		cmd.Printf("Error deploying %s: %s\n", service.ServiceName, err.Error())
+		return errors.Wrap(err, "error deploying service")
 	}
 
 	cmd.Printf("Successfully deployed %s\n", service.ServiceName)
+	return nil
 }
 
 func (d *DeployCommand) Deploy(service *Service) error {
@@ -53,19 +52,18 @@ func (d *DeployCommand) Deploy(service *Service) error {
 		return errors.Wrap(err, "error building docker image")
 	}
 
-	if err = d.docker.PushImage(service); err != nil {
+	if err := d.docker.PushImage(service); err != nil {
 		return errors.Wrap(err, "error pushing docker image")
 	}
 
-	_, err = d.r.RunEnv(
+	if _, err := d.r.RunEnv(
 		[]string{fmt.Sprintf("DOCKER_IMAGE=%s", service.ImageName), fmt.Sprintf("DOCKER_TAG=%s", service.ImageTag)},
 		"micros",
 		"service:deploy",
 		service.ServiceName,
 		"-f",
 		service.ServiceDescriptor,
-	)
-	if err != nil {
+	); err != nil {
 		return errors.Wrap(err, "error deploying to micros\n")
 	}
 

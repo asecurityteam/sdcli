@@ -1,10 +1,9 @@
 package build
 
 import (
-	"os"
-
 	"bitbucket.org/asecurityteam/sdcli/internal/build/commands"
 	"bitbucket.org/asecurityteam/sdcli/internal/runner"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -24,16 +23,15 @@ func NewCommand() *cobra.Command {
 		Use:   "build",
 		Short: "installs project dependencies, runs tests, and performs Docker builds",
 		Long:  long,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			service, err := commands.NewService(r, true, nil)
 			if err != nil {
-				cmd.Printf("Error initializing service: %s\n", err.Error())
-				os.Exit(1)
+				return errors.Wrap(err, "error initializing service")
 			}
 			if err = d.BuildImage(service); err != nil {
-				cmd.Printf("Error building Docker image: %s\n", err.Error())
-				os.Exit(1)
+				return errors.Wrap(err, "error building image")
 			}
+			return nil
 		},
 	}
 
