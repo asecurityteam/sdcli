@@ -17,7 +17,7 @@ const (
 
 type GlobFunc func(string) ([]string, error)
 
-type ServiceGenerator struct {
+type serviceGenerator struct {
 	r        runner.Runner
 	globFunc GlobFunc
 	isDev    bool
@@ -31,11 +31,11 @@ type Service struct {
 	ServiceName       string
 }
 
-func newServiceGenerator(r runner.Runner, isDev bool, g GlobFunc) *ServiceGenerator {
+func newServiceGenerator(r runner.Runner, isDev bool, g GlobFunc) *serviceGenerator {
 	if g == nil {
 		g = filepath.Glob
 	}
-	return &ServiceGenerator{r: r, globFunc: g, isDev: isDev}
+	return &serviceGenerator{r: r, globFunc: g, isDev: isDev}
 }
 
 func NewService(r runner.Runner, isDev bool, g GlobFunc) (*Service, error) {
@@ -43,7 +43,7 @@ func NewService(r runner.Runner, isDev bool, g GlobFunc) (*Service, error) {
 	return serviceGenerator.GetService()
 }
 
-func (s *ServiceGenerator) GetService() (*Service, error) {
+func (s *serviceGenerator) GetService() (*Service, error) {
 	serviceDescriptor, err := s.GetServiceDescriptor()
 	if err != nil {
 		return nil, err
@@ -64,7 +64,7 @@ func (s *ServiceGenerator) GetService() (*Service, error) {
 	}, nil
 }
 
-func (s *ServiceGenerator) GetServiceDescriptor() (string, error) {
+func (s *serviceGenerator) GetServiceDescriptor() (string, error) {
 	serviceDescriptor, err := s.globFunc("*.sd.yml")
 	if err != nil {
 		return "", errors.Wrap(err, "error finding service descriptor")
@@ -75,11 +75,11 @@ func (s *ServiceGenerator) GetServiceDescriptor() (string, error) {
 	return serviceDescriptor[0], nil
 }
 
-func (s *ServiceGenerator) GetServiceName(serviceDescriptor string) string {
+func (s *serviceGenerator) GetServiceName(serviceDescriptor string) string {
 	return strings.TrimSuffix(filepath.Base(serviceDescriptor), ".sd.yml")
 }
 
-func (s *ServiceGenerator) GetImageName(serviceName string) string {
+func (s *serviceGenerator) GetImageName(serviceName string) string {
 	registry := AtlassianSecuritySoxRegistry
 	if s.isDev {
 		registry = AtlassianSecurityRegistry
@@ -87,7 +87,7 @@ func (s *ServiceGenerator) GetImageName(serviceName string) string {
 	return fmt.Sprintf("%s/%s", registry, serviceName)
 }
 
-func (s *ServiceGenerator) GetTag() (string, error) {
+func (s *serviceGenerator) GetTag() (string, error) {
 	var hasUncommittedChanges bool
 	_, err := s.r.Run("git", "diff", "--cached", "--quiet")
 	if err != nil {

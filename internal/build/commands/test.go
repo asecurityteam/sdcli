@@ -34,14 +34,17 @@ func TestCommand() *cobra.Command {
 				exec.Command("go", testFlags...).CombinedOutput()
 				coverageOutput, _ := exec.Command("go", "tool", "cover", "-func=coverage.out").CombinedOutput()
 				cmd.Printf("%s\n", coverageOutput)
-			} else {
-				if integration {
-					testFlags = append(testFlags, "-tags=integration")
-				}
-				testFlags = append(testFlags, "./...")
-				testOutput, _ := exec.Command("go", testFlags...).CombinedOutput()
-				cmd.Printf("%s\n", testOutput)
+				return nil
 			}
+
+			if integration {
+				testFlags = append(testFlags, "-tags=integration")
+			}
+
+			testFlags = append(testFlags, "./...")
+			testOutput, _ := exec.Command("go", testFlags...).CombinedOutput()
+			cmd.Printf("%s\n", testOutput)
+
 			return nil
 		},
 	}

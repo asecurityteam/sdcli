@@ -35,10 +35,6 @@ func (d *DeployCommand) run(cmd *cobra.Command, args []string) error {
 		return errors.Wrap(err, "error initializing service")
 	}
 
-	if err = d.docker.BuildImage(service); err != nil {
-		return errors.Wrap(err, "error building image")
-	}
-
 	if err = d.Deploy(service); err != nil {
 		return errors.Wrap(err, "error deploying service")
 	}
@@ -49,7 +45,7 @@ func (d *DeployCommand) run(cmd *cobra.Command, args []string) error {
 
 func (d *DeployCommand) Deploy(service *Service) error {
 	if err := d.docker.BuildImage(service); err != nil {
-		return errors.Wrap(err, "error building docker image")
+		return errors.Wrap(err, "error building image")
 	}
 
 	if err := d.docker.PushImage(service); err != nil {
