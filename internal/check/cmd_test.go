@@ -9,6 +9,7 @@ import (
 	"bitbucket.org/asecurityteam/sdcli/internal/check/commands"
 	"bitbucket.org/asecurityteam/sdcli/internal/mocks"
 	"github.com/golang/mock/gomock"
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
 )
 
@@ -23,15 +24,16 @@ func TestSuccessAll(t *testing.T) {
 	mockCheckerA.EXPECT().Check().Return(nil)
 	mockCheckerB.EXPECT().Check().Return(nil)
 
-	var cmd = NewCommand()
-	cmd.checks = []checker{
+	var checks = []checker{
 		mockCheckerA,
 		mockCheckerB,
 	}
 
+	var cmd = &cobra.Command{}
+
 	var buff = &bytes.Buffer{}
 	cmd.SetOutput(buff)
-	cmd.run(cmd.Command, nil)
+	runChecks(checks)(cmd, nil)
 
 	var matcher = regexp.MustCompile("✓")
 	var matches = matcher.FindAllString(buff.String(), -1)
@@ -48,14 +50,14 @@ func TestSuccessSubcommand(t *testing.T) {
 	mockCheckerA.EXPECT().Name().Return(a)
 	mockCheckerA.EXPECT().Check().Return(nil)
 
-	var cmd = NewCommand()
-	cmd.checks = []checker{
+	var cmd = &cobra.Command{}
+	var checks = []checker{
 		mockCheckerA,
 	}
 
 	var buff = &bytes.Buffer{}
 	cmd.SetOutput(buff)
-	cmd.run(cmd.Command, []string{a})
+	runChecks(checks)(cmd, []string{a})
 
 	var matcher = regexp.MustCompile("✓")
 	var matches = matcher.FindAllString(buff.String(), -1)
@@ -72,14 +74,14 @@ func TestFailure(t *testing.T) {
 	mockCheckerA.EXPECT().Name().Return(a)
 	mockCheckerA.EXPECT().Check().Return(&commands.CheckerFailure{})
 
-	var cmd = NewCommand()
-	cmd.checks = []checker{
+	var cmd = &cobra.Command{}
+	var checks = []checker{
 		mockCheckerA,
 	}
 
 	var buff = &bytes.Buffer{}
 	cmd.SetOutput(buff)
-	cmd.run(cmd.Command, []string{a})
+	runChecks(checks)(cmd, []string{a})
 
 	var matcher = regexp.MustCompile("✗ failure")
 	var matches = matcher.FindAllString(buff.String(), -1)
@@ -96,14 +98,14 @@ func TestError(t *testing.T) {
 	mockCheckerA.EXPECT().Name().Return(a)
 	mockCheckerA.EXPECT().Check().Return(errors.New(""))
 
-	var cmd = NewCommand()
-	cmd.checks = []checker{
+	var cmd = &cobra.Command{}
+	var checks = []checker{
 		mockCheckerA,
 	}
 
 	var buff = &bytes.Buffer{}
 	cmd.SetOutput(buff)
-	cmd.run(cmd.Command, []string{a})
+	runChecks(checks)(cmd, []string{a})
 
 	var matcher = regexp.MustCompile("✗ error")
 	var matches = matcher.FindAllString(buff.String(), -1)
