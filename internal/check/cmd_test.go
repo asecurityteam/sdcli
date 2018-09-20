@@ -33,7 +33,8 @@ func TestSuccessAll(t *testing.T) {
 
 	var buff = &bytes.Buffer{}
 	cmd.SetOutput(buff)
-	runChecks(checks)(cmd, nil)
+	var err = runChecks(checks)(cmd, nil)
+	require.Nil(t, err)
 
 	var matcher = regexp.MustCompile("✓")
 	var matches = matcher.FindAllString(buff.String(), -1)
@@ -57,7 +58,8 @@ func TestSuccessSubcommand(t *testing.T) {
 
 	var buff = &bytes.Buffer{}
 	cmd.SetOutput(buff)
-	runChecks(checks)(cmd, []string{a})
+	var err = runChecks(checks)(cmd, []string{a})
+	require.Nil(t, err)
 
 	var matcher = regexp.MustCompile("✓")
 	var matches = matcher.FindAllString(buff.String(), -1)
@@ -81,7 +83,8 @@ func TestFailure(t *testing.T) {
 
 	var buff = &bytes.Buffer{}
 	cmd.SetOutput(buff)
-	runChecks(checks)(cmd, []string{a})
+	var err = runChecks(checks)(cmd, []string{a})
+	require.NotNil(t, err)
 
 	var matcher = regexp.MustCompile("✗ failure")
 	var matches = matcher.FindAllString(buff.String(), -1)
@@ -105,7 +108,8 @@ func TestError(t *testing.T) {
 
 	var buff = &bytes.Buffer{}
 	cmd.SetOutput(buff)
-	runChecks(checks)(cmd, []string{a})
+	var err = runChecks(checks)(cmd, []string{a})
+	require.NotNil(t, err)
 
 	var matcher = regexp.MustCompile("✗ error")
 	var matches = matcher.FindAllString(buff.String(), -1)
