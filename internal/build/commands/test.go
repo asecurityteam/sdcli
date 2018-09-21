@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"fmt"
+	"os"
 	"os/exec"
 
 	"github.com/pkg/errors"
@@ -10,6 +12,7 @@ import (
 const (
 	IntegrationFlag = "integration"
 	CoverageFlag    = "coverage"
+	CoverageFile    = "coverage.out"
 )
 
 // TestCommand returns a new check command
@@ -30,9 +33,10 @@ func TestCommand() *cobra.Command {
 			testFlags := []string{"test", "-race", "-v", "-cover"}
 
 			if coverage {
-				testFlags = []string{"test", "-coverprofile", "cover.out", "./..."}
+				os.Remove(CoverageFile)
+				testFlags = []string{"test", "-coverprofile", CoverageFile, "./..."}
 				exec.Command("go", testFlags...).CombinedOutput()
-				coverageOutput, _ := exec.Command("go", "tool", "cover", "-func=coverage.out").CombinedOutput()
+				coverageOutput, _ := exec.Command("go", "tool", "cover", fmt.Sprintf("-func=%s", CoverageFile)).CombinedOutput()
 				cmd.Printf("%s\n", coverageOutput)
 				return nil
 			}
