@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 
+	"bitbucket.org/asecurityteam/sdcli/internal/build"
 	"bitbucket.org/asecurityteam/sdcli/internal/check"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -50,14 +51,8 @@ func InitRoot() {
 	// will be global for your application.
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.sdcli.yaml)")
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 	// Register subcommands
-	RootCmd.AddCommand(buildCmd())
-	RootCmd.AddCommand(depCmd())
-	RootCmd.AddCommand(deployCmd())
+	RootCmd.AddCommand(build.NewCommand())
 	RootCmd.AddCommand(lintCmd())
 	RootCmd.AddCommand(runCmd())
 	RootCmd.AddCommand(testCmd())
