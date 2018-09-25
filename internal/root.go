@@ -55,7 +55,6 @@ func InitRoot() {
 	RootCmd.AddCommand(build.NewCommand())
 	RootCmd.AddCommand(lintCmd())
 	RootCmd.AddCommand(runCmd())
-	RootCmd.AddCommand(testCmd())
 	RootCmd.AddCommand(check.NewCommand())
 }
 
