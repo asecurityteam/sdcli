@@ -85,6 +85,7 @@ func CoverageCommand() *cobra.Command {
 			if err != nil {
 				return errors.Wrap(err, "error creating combined coverage file")
 			}
+			defer mergedCoverage.Close()
 			if _, err := mergedCoverage.Write(gocovMergeOutput); err != nil {
 				return err
 			}
