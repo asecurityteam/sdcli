@@ -67,15 +67,12 @@ func CoverageCommand() *cobra.Command {
 			if err := CreateCoverageDir(); err != nil {
 				return err
 			}
-			if _, err := RunTests(UnitCoverageProfile, AllTestPattern); err != nil {
-				return errors.Wrap(err, "error running unit tests")
-			}
-			if _, err := RunTests(IntegrationCoverageProfile, IntegrationTestPattern); HasIntegrationTests() && err != nil {
-				return errors.Wrap(err, "error running integration tests")
-			}
 			coverageFiles, err := filepath.Glob(".coverage/*.cover.out")
 			if err != nil {
 				return errors.Wrap(err, "error globbing coverage directory")
+			}
+			if len(coverageFiles) == 0 {
+				return errors.New("no coverage files found")
 			}
 			gocovMergeOutput, err := exec.Command("gocovmerge", coverageFiles...).Output()
 			if err != nil {
