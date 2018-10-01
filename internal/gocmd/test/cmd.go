@@ -1,4 +1,4 @@
-package commands
+package test
 
 import (
 	"fmt"
@@ -15,8 +15,8 @@ const (
 	CoverageFile    = "coverage.out"
 )
 
-// TestCommand returns a new check command
-func TestCommand() *cobra.Command {
+// NewCommand returns a new test command
+func NewCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   "test",
 		Short: "run unit/integration tests and generate coverage reports",

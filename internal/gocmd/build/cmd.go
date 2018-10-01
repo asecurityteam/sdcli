@@ -1,7 +1,7 @@
 package build
 
 import (
-	"bitbucket.org/asecurityteam/sdcli/internal/build/commands"
+	"bitbucket.org/asecurityteam/sdcli/internal/gocmd/build/commands"
 	"bitbucket.org/asecurityteam/sdcli/internal/runner"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -36,7 +36,6 @@ func NewCommand() *cobra.Command {
 	}
 
 	command.AddCommand(commands.DepCommand())
-	command.AddCommand(commands.TestCommand())
 	command.AddCommand(commands.NewDeployCommand(r, d).Command)
 	return command
 }

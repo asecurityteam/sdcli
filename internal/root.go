@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"os"
 
-	"bitbucket.org/asecurityteam/sdcli/internal/build"
 	"bitbucket.org/asecurityteam/sdcli/internal/check"
+	"bitbucket.org/asecurityteam/sdcli/internal/gocmd"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -52,10 +52,10 @@ func InitRoot() {
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.sdcli.yaml)")
 
 	// Register subcommands
-	RootCmd.AddCommand(build.NewCommand())
+	RootCmd.AddCommand(check.NewCommand())
+	RootCmd.AddCommand(gocmd.NewCommand())
 	RootCmd.AddCommand(lintCmd())
 	RootCmd.AddCommand(runCmd())
-	RootCmd.AddCommand(check.NewCommand())
 }
 
 // initConfig reads in config file and ENV variables if set.
