@@ -13,6 +13,7 @@ sdcli
 *.out
 coverage.xml
 coverage/
+.coverage/
 
 # Vendored dependencies
 vendor/
