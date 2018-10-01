@@ -12,13 +12,13 @@ import (
 )
 
 const (
-	IntegrationFlag            = "integration"
-	UnitCoverageProfile        = ".coverage/unit.cover.out"
-	IntegrationCoverageProfile = ".coverage/integration.cover.out"
-	CombinedCoverageProfile    = ".coverage/combined.cover.out"
-	CoverageDir                = ".coverage"
-	AllTestPattern             = "./..."
-	IntegrationTestPattern     = "./tests/"
+	integrationFlag            = "integration"
+	unitCoverageProfile        = ".coverage/unit.cover.out"
+	integrationCoverageProfile = ".coverage/integration.cover.out"
+	combinedCoverageProfile    = ".coverage/combined.cover.out"
+	coverageDir                = ".coverage"
+	allTestPattern             = "./..."
+	integrationTestPattern     = "./tests/"
 )
 
 var baseTestArguments = [4]string{"test", "-race", "-v", "-cover"}
@@ -33,16 +33,16 @@ func NewCommand() *cobra.Command {
 				return err
 			}
 
-			integration, err := cmd.Flags().GetBool(IntegrationFlag)
+			integration, err := cmd.Flags().GetBool(integrationFlag)
 			if err != nil {
 				return errors.Wrap(err, "error getting integration flag")
 			}
 
 			var cmdOutput []byte
 			if integration && HasIntegrationTests() {
-				cmdOutput, err = RunTests(IntegrationCoverageProfile, IntegrationTestPattern)
+				cmdOutput, err = RunTests(integrationCoverageProfile, integrationTestPattern)
 			}
-			cmdOutput, err = RunTests(UnitCoverageProfile, AllTestPattern)
+			cmdOutput, err = RunTests(unitCoverageProfile, allTestPattern)
 			if err != nil {
 				return err
 			}
@@ -52,7 +52,7 @@ func NewCommand() *cobra.Command {
 		},
 	}
 
-	command.Flags().BoolP(IntegrationFlag, "i", false, "Run integration tests")
+	command.Flags().BoolP(integrationFlag, "i", false, "Run integration tests")
 	command.AddCommand(CoverageCommand())
 
 	return command
@@ -78,7 +78,7 @@ func CoverageCommand() *cobra.Command {
 			if err != nil {
 				return errors.Wrap(err, "error merging coverage")
 			}
-			mergedCoverage, err := os.Create(CombinedCoverageProfile)
+			mergedCoverage, err := os.Create(combinedCoverageProfile)
 			if err != nil {
 				return errors.Wrap(err, "error creating combined coverage file")
 			}
@@ -86,7 +86,7 @@ func CoverageCommand() *cobra.Command {
 			if _, err := mergedCoverage.Write(gocovMergeOutput); err != nil {
 				return err
 			}
-			report, _ := exec.Command("go", "tool", "cover", "-func", CombinedCoverageProfile).CombinedOutput()
+			report, _ := exec.Command("go", "tool", "cover", "-func", combinedCoverageProfile).CombinedOutput()
 			cmd.Printf("%s\n", report)
 			return nil
 		},
@@ -94,7 +94,7 @@ func CoverageCommand() *cobra.Command {
 }
 
 func CreateCoverageDir() error {
-	if err := os.Mkdir(CoverageDir, os.ModeDir|os.ModePerm); err != nil {
+	if err := os.Mkdir(coverageDir, os.ModeDir|os.ModePerm); err != nil {
 		if os.IsNotExist(err) {
 			return err
 		}
@@ -103,7 +103,7 @@ func CreateCoverageDir() error {
 }
 
 func HasIntegrationTests() bool {
-	if _, err := os.Stat(IntegrationTestPattern); os.IsNotExist(err) {
+	if _, err := os.Stat(integrationTestPattern); os.IsNotExist(err) {
 		return false
 	}
 	return true
