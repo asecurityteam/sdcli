@@ -29,7 +29,7 @@ func NewCommand() *cobra.Command {
 		Use:   "test",
 		Short: "run unit/integration tests and generate coverage reports",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := CreateCoverageDir(); err != nil {
+			if err := createCoverageDir(); err != nil {
 				return err
 			}
 
@@ -39,10 +39,11 @@ func NewCommand() *cobra.Command {
 			}
 
 			var cmdOutput []byte
-			if integration && HasIntegrationTests() {
-				cmdOutput, err = RunTests(integrationCoverageProfile, integrationTestPattern)
+			if integration && hasIntegrationTests() {
+				cmdOutput, err = runTests(integrationCoverageProfile, integrationTestPattern)
+			} else {
+				cmdOutput, err = runTests(unitCoverageProfile, allTestPattern)
 			}
-			cmdOutput, err = RunTests(unitCoverageProfile, allTestPattern)
 			if err != nil {
 				return err
 			}
@@ -53,18 +54,18 @@ func NewCommand() *cobra.Command {
 	}
 
 	command.Flags().BoolP(integrationFlag, "i", false, "Run integration tests")
-	command.AddCommand(CoverageCommand())
+	command.AddCommand(coverageCommand())
 
 	return command
 }
 
-func CoverageCommand() *cobra.Command {
+func coverageCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:     "coverage",
 		Aliases: []string{"cov"},
 		Short:   "produce test coverage for unit and integration tests",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := CreateCoverageDir(); err != nil {
+			if err := createCoverageDir(); err != nil {
 				return err
 			}
 			coverageFiles, err := filepath.Glob(".coverage/*.cover.out")
@@ -93,7 +94,7 @@ func CoverageCommand() *cobra.Command {
 	}
 }
 
-func CreateCoverageDir() error {
+func createCoverageDir() error {
 	if err := os.Mkdir(coverageDir, os.ModeDir|os.ModePerm); err != nil {
 		if os.IsNotExist(err) {
 			return err
@@ -102,14 +103,14 @@ func CreateCoverageDir() error {
 	return nil
 }
 
-func HasIntegrationTests() bool {
+func hasIntegrationTests() bool {
 	if _, err := os.Stat(integrationTestPattern); os.IsNotExist(err) {
 		return false
 	}
 	return true
 }
 
-func RunTests(coverageProfile, testDir string) ([]byte, error) {
+func runTests(coverageProfile, testDir string) ([]byte, error) {
 	testArgs := append(baseTestArguments[:], []string{"-coverprofile", coverageProfile, testDir}...)
 	testOutput, err := exec.Command("go", testArgs...).CombinedOutput()
 	if err != nil {

@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// goCmd represents the go command
+// NewCommand returns the go command
 func NewCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   "go",

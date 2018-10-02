@@ -11,18 +11,19 @@ import (
 )
 
 const (
-	AtlassianSecurityRegistry    = "docker.atl-paas.net/asecurityteam"
-	AtlassianSecuritySoxRegistry = "docker.atl-paas.net/asecurityteam/sox"
+	atlassianSecurityRegistry    = "docker.atl-paas.net/asecurityteam"
+	atlassianSecuritySoxRegistry = "docker.atl-paas.net/asecurityteam/sox"
 )
 
-type GlobFunc func(string) ([]string, error)
+type globFunc func(string) ([]string, error)
 
 type serviceGenerator struct {
 	r        runner.Runner
-	globFunc GlobFunc
+	globFunc globFunc
 	isDev    bool
 }
 
+// Service represents information required for deploying a service to micros
 type Service struct {
 	Image             string
 	ImageName         string
@@ -31,29 +32,31 @@ type Service struct {
 	ServiceName       string
 }
 
-func newServiceGenerator(r runner.Runner, isDev bool, g GlobFunc) *serviceGenerator {
+func newServiceGenerator(r runner.Runner, isDev bool, g globFunc) *serviceGenerator {
 	if g == nil {
 		g = filepath.Glob
 	}
 	return &serviceGenerator{r: r, globFunc: g, isDev: isDev}
 }
 
-func NewService(r runner.Runner, isDev bool, g GlobFunc) (*Service, error) {
+// NewService returns a new service, accepts a runner and globFunc for testing purposes, isDev
+// dictates tagging procedures
+func NewService(r runner.Runner, isDev bool, g globFunc) (*Service, error) {
 	serviceGenerator := newServiceGenerator(r, isDev, g)
-	return serviceGenerator.GetService()
+	return serviceGenerator.getService()
 }
 
-func (s *serviceGenerator) GetService() (*Service, error) {
-	serviceDescriptor, err := s.GetServiceDescriptor()
+func (s *serviceGenerator) getService() (*Service, error) {
+	serviceDescriptor, err := s.getServiceDescriptor()
 	if err != nil {
 		return nil, err
 	}
-	tag, err := s.GetTag()
+	tag, err := s.getTag()
 	if err != nil {
 		return nil, err
 	}
-	serviceName := s.GetServiceName(serviceDescriptor)
-	imageName := s.GetImageName(serviceName)
+	serviceName := s.getServiceName(serviceDescriptor)
+	imageName := s.getImageName(serviceName)
 	image := fmt.Sprintf("%s:%s", imageName, tag)
 	return &Service{
 		Image:             image,
@@ -64,7 +67,7 @@ func (s *serviceGenerator) GetService() (*Service, error) {
 	}, nil
 }
 
-func (s *serviceGenerator) GetServiceDescriptor() (string, error) {
+func (s *serviceGenerator) getServiceDescriptor() (string, error) {
 	serviceDescriptor, err := s.globFunc("*.sd.yml")
 	if err != nil {
 		return "", errors.Wrap(err, "error finding service descriptor")
@@ -75,19 +78,19 @@ func (s *serviceGenerator) GetServiceDescriptor() (string, error) {
 	return serviceDescriptor[0], nil
 }
 
-func (s *serviceGenerator) GetServiceName(serviceDescriptor string) string {
+func (s *serviceGenerator) getServiceName(serviceDescriptor string) string {
 	return strings.TrimSuffix(filepath.Base(serviceDescriptor), ".sd.yml")
 }
 
-func (s *serviceGenerator) GetImageName(serviceName string) string {
-	registry := AtlassianSecuritySoxRegistry
+func (s *serviceGenerator) getImageName(serviceName string) string {
+	registry := atlassianSecuritySoxRegistry
 	if s.isDev {
-		registry = AtlassianSecurityRegistry
+		registry = atlassianSecurityRegistry
 	}
 	return fmt.Sprintf("%s/%s", registry, serviceName)
 }
 
-func (s *serviceGenerator) GetTag() (string, error) {
+func (s *serviceGenerator) getTag() (string, error) {
 	var hasUncommittedChanges bool
 	_, err := s.r.Run("git", "diff", "--cached", "--quiet")
 	if err != nil {

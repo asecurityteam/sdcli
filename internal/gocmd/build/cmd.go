@@ -15,7 +15,7 @@ It handles:
 	* generating code coverage
 	* Docker builds and deployments.`
 
-// buildCmd represents the build command
+// NewCommand returns the build command
 func NewCommand() *cobra.Command {
 	r := runner.ExecRunner{}
 	d := commands.NewDocker(r)

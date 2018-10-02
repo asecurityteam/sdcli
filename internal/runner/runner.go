@@ -21,7 +21,7 @@ func (r ExecRunner) Run(cmd string, args ...string) ([]byte, error) {
 	return exec.Command(cmd, args...).CombinedOutput()
 }
 
-// Run runs the ExecRunner
+// RunEnv runs the ExecRunner with additional environment variables
 func (r ExecRunner) RunEnv(env []string, cmd string, args ...string) ([]byte, error) {
 	command := exec.Command(cmd, args...)
 	command.Env = append(os.Environ(), env...)
