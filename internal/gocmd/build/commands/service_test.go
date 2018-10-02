@@ -41,10 +41,10 @@ func TestGetServiceAndImageName(t *testing.T) {
 			runner := runner.ExecRunner{}
 			serviceGenerator := newServiceGenerator(runner, test.IsDev, nil)
 
-			serviceName := serviceGenerator.GetServiceName(test.ServiceDescriptor)
+			serviceName := serviceGenerator.getServiceName(test.ServiceDescriptor)
 			require.Equal(tt, test.ExpectedServiceName, serviceName)
 
-			imageName := serviceGenerator.GetImageName(serviceName)
+			imageName := serviceGenerator.getImageName(serviceName)
 			require.Equal(tt, test.ExpectedImageName, imageName)
 		})
 	}
@@ -84,7 +84,7 @@ func TestGetServiceDescriptor(t *testing.T) {
 
 			runner := runner.ExecRunner{}
 			serviceGenerator := newServiceGenerator(runner, false, globFunc)
-			actualServiceDescriptor, err := serviceGenerator.GetServiceDescriptor()
+			actualServiceDescriptor, err := serviceGenerator.getServiceDescriptor()
 
 			require.Equal(tt, test.ExpectedServiceDescriptor, actualServiceDescriptor)
 			if test.ExpectedErr {
@@ -136,7 +136,7 @@ func TestGetTag(t *testing.T) {
 			mockRunner.EXPECT().Run("git", "diff", "--cached", "--quiet").Return(nil, test.UncommittedChangesErr)
 			mockRunner.EXPECT().Run("git", "rev-parse", "--short", "HEAD").Return([]byte(test.Hash), test.HashErr)
 
-			actualTag, err := serviceGenerator.GetTag()
+			actualTag, err := serviceGenerator.getTag()
 
 			require.Equal(tt, test.ExpectedTag, actualTag)
 			if test.ExpectedErr {
@@ -163,7 +163,7 @@ func TestGetTagForDevBuildWithUncommitedChanges(t *testing.T) {
 	mockRunner.EXPECT().Run("git", "diff", "--cached", "--quiet").Return(nil, errors.New("changes"))
 	mockRunner.EXPECT().Run("git", "rev-parse", "--short", "HEAD").Return([]byte(hash), nil)
 
-	actualTag, err := serviceGenerator.GetTag()
+	actualTag, err := serviceGenerator.getTag()
 
 	require.Equal(t, expectedTag, actualTag)
 	require.Nil(t, err)

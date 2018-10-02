@@ -35,6 +35,6 @@ func TestDeployCommand(t *testing.T) {
 		"my-service.sd.yml",
 	).Return(nil, nil)
 
-	e := deployCmd.Deploy(service)
+	e := deployCmd.deploy(service)
 	require.Nil(t, e)
 }

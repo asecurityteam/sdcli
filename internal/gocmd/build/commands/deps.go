@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// DepCommand returns a new check command
+// DepCommand returns a new dep command for ensuring go dependencies
 func DepCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "deps",

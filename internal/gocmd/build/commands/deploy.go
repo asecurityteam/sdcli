@@ -8,12 +8,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// DeployCommand deploys a service to micros
 type DeployCommand struct {
 	*cobra.Command
 	docker *Docker
 	r      runner.Runner
 }
 
+// NewDeployCommand returns a new DeployCommand
 func NewDeployCommand(r runner.Runner, docker *Docker) *DeployCommand {
 	deployCmd := &DeployCommand{
 		docker: docker,
@@ -35,7 +37,7 @@ func (d *DeployCommand) run(cmd *cobra.Command, args []string) error {
 		return errors.Wrap(err, "error initializing service")
 	}
 
-	if err = d.Deploy(service); err != nil {
+	if err = d.deploy(service); err != nil {
 		return errors.Wrap(err, "error deploying service")
 	}
 
@@ -43,7 +45,7 @@ func (d *DeployCommand) run(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func (d *DeployCommand) Deploy(service *Service) error {
+func (d *DeployCommand) deploy(service *Service) error {
 	if err := d.docker.BuildImage(service); err != nil {
 		return errors.Wrap(err, "error building image")
 	}
