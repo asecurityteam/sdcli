@@ -16,7 +16,9 @@ package gocmd
 
 import (
 	"bitbucket.org/asecurityteam/sdcli/internal/gocmd/build"
+	"bitbucket.org/asecurityteam/sdcli/internal/gocmd/lint"
 	"bitbucket.org/asecurityteam/sdcli/internal/gocmd/test"
+	"bitbucket.org/asecurityteam/sdcli/internal/runner"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +28,9 @@ func NewCommand() *cobra.Command {
 		Use:   "go",
 		Short: "tools for building, testing, and deploying golang projects",
 	}
+	r := runner.ExecRunner{}
 	command.AddCommand(build.NewCommand())
 	command.AddCommand(test.NewCommand())
+	command.AddCommand(lint.NewCommand(r))
 	return command
 }
