@@ -47,7 +47,7 @@ func NewCommand() *cobra.Command {
 				if err != nil {
 					return errors.Wrap(err, "error listing packages")
 				}
-				filterPackages := exec.Command("grep", "-v", "-e", "/tests$")
+				filterPackages := exec.Command("grep", "-v", "-e", "/tests$", "-e", "/mocks$")
 				filterPackages.Stdin = bytes.NewBuffer(allPackages)
 				var filterPackagesOutput []byte
 				filterPackagesOutput, err = filterPackages.Output()
