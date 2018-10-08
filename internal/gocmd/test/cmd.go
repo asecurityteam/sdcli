@@ -42,14 +42,15 @@ func NewCommand() *cobra.Command {
 			if integration && hasIntegrationTests() {
 				cmdOutput, err = runTests(integrationCoverageProfile, []string{integrationTestPattern})
 			} else {
-				allPackages, err := exec.Command("go", "list", allTestPattern).Output()
+				var allPackages []byte
+				allPackages, err = exec.Command("go", "list", allTestPattern).Output()
 				if err != nil {
 					return errors.Wrap(err, "error listing packages")
 				}
 				filterPackages := exec.Command("grep", "-v", "-e", "/inttest$")
 				filterPackages.Stdin = bytes.NewBuffer(allPackages)
-
-				filterPackagesOutput, err := filterPackages.Output()
+				var filterPackagesOutput []byte
+				filterPackagesOutput, err = filterPackages.Output()
 				if err != nil {
 					return errors.Wrap(err, "error excluding packages")
 				}
@@ -96,7 +97,7 @@ func coverageCommand() *cobra.Command {
 				return errors.Wrap(err, "error creating combined coverage file")
 			}
 			defer mergedCoverage.Close()
-			if _, err := mergedCoverage.Write(gocovMergeOutput); err != nil {
+			if _, err = mergedCoverage.Write(gocovMergeOutput); err != nil {
 				return err
 			}
 

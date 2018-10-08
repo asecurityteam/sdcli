@@ -90,7 +90,7 @@ func runChecks(checks []checker) func(*cobra.Command, []string) error {
 		if len(errors) == 0 {
 			return nil
 		}
-		return &multiError{errors}
+		return &multiError{errors: errors}
 	}
 }
 
