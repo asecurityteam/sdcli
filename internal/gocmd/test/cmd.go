@@ -21,7 +21,7 @@ const (
 	integrationTestPattern     = "./tests/"
 )
 
-var baseTestArguments = [4]string{"test", "-race", "-v", "-cover"}
+var baseTestArguments = [5]string{"test", "-race", "-v", "-cover", "-coverprofile"}
 
 // NewCommand returns a new test command
 func NewCommand() *cobra.Command {
@@ -47,7 +47,7 @@ func NewCommand() *cobra.Command {
 				if err != nil {
 					return errors.Wrap(err, "error listing packages")
 				}
-				filterPackages := exec.Command("grep", "-v", "-e", "/inttest$")
+				filterPackages := exec.Command("grep", "-v", "-e", "/tests$")
 				filterPackages.Stdin = bytes.NewBuffer(allPackages)
 				var filterPackagesOutput []byte
 				filterPackagesOutput, err = filterPackages.Output()
@@ -152,7 +152,7 @@ func createXMLCoverage(coverageProfile string) error {
 }
 
 func runTests(coverageProfile string, testDirs []string) ([]byte, error) {
-	testArgs := append(baseTestArguments[:], []string{"-coverprofile", coverageProfile}...)
+	testArgs := append(baseTestArguments[:], coverageProfile)
 	testArgs = append(testArgs, testDirs...)
 	testOutput, err := exec.Command("go", testArgs...).CombinedOutput()
 	if err != nil {
