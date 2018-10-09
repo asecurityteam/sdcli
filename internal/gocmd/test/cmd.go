@@ -39,16 +39,16 @@ func NewCommand() *cobra.Command {
 			}
 
 			var cmdOutput []byte
-			if integration && hasIntegrationTests() {
-				cmdOutput, err = runTests(integrationCoverageProfile, integrationTestPattern)
-			} else {
-				cmdOutput, err = runTests(unitCoverageProfile, allTestPattern)
+			coverageProfile, testPattern := unitCoverageProfile, allTestPattern
+			runIntegrationTests := integration && hasIntegrationTests()
+			if runIntegrationTests {
+				coverageProfile, testPattern = integrationCoverageProfile, integrationTestPattern
 			}
+			cmdOutput, err = runTests(coverageProfile, testPattern, runIntegrationTests)
+			cmd.Printf("%s\n", cmdOutput)
 			if err != nil {
 				return err
 			}
-			cmd.Printf("%s\n", cmdOutput)
-
 			return nil
 		},
 	}
@@ -84,7 +84,11 @@ func coverageCommand() *cobra.Command {
 				return errors.Wrap(err, "error creating combined coverage file")
 			}
 			defer mergedCoverage.Close()
-			if _, err := mergedCoverage.Write(gocovMergeOutput); err != nil {
+			if _, err = mergedCoverage.Write(gocovMergeOutput); err != nil {
+				return err
+			}
+
+			if err = createXMLCoverage(combinedCoverageProfile); err != nil {
 				return err
 			}
 			report, _ := exec.Command("go", "tool", "cover", "-func", combinedCoverageProfile).CombinedOutput()
@@ -110,16 +114,10 @@ func hasIntegrationTests() bool {
 	return true
 }
 
-func runTests(coverageProfile, testDir string) ([]byte, error) {
-	testArgs := append(baseTestArguments[:], []string{"-coverprofile", coverageProfile, testDir}...)
-	testOutput, err := exec.Command("go", testArgs...).CombinedOutput()
-	if err != nil {
-		return nil, errors.Wrap(err, "error running tests")
-	}
-
+func createXMLCoverage(coverageProfile string) error {
 	gocovConvert, err := exec.Command("gocov", "convert", coverageProfile).Output()
 	if err != nil {
-		return nil, errors.Wrap(err, "gocov: error converting coverage")
+		return errors.Wrap(err, "gocov: error converting coverage")
 	}
 
 	xmlFile := strings.Replace(coverageProfile, ".cover.out", ".xml", 1)
@@ -127,14 +125,31 @@ func runTests(coverageProfile, testDir string) ([]byte, error) {
 	gocovXML.Stdin = bytes.NewBuffer(gocovConvert)
 	xmlCoverage, err := gocovXML.Output()
 	if err != nil {
-		return nil, errors.Wrap(err, "gocov-xml: error converting coverage to xml")
+		return errors.Wrap(err, "gocov-xml: error converting coverage to xml")
 	}
 	xmlCoverageProfile, err := os.Create(xmlFile)
 	if err != nil {
-		return nil, errors.Wrap(err, "could not create xml coverage profile")
+		return errors.Wrap(err, "could not create xml coverage profile")
 	}
 	defer xmlCoverageProfile.Close()
 	if _, err := xmlCoverageProfile.Write(xmlCoverage); err != nil {
+		return err
+	}
+	return nil
+}
+
+func runTests(coverageProfile string, testDir string, integrationFlag bool) ([]byte, error) {
+	testArgs := baseTestArguments[:]
+	if integrationFlag {
+		testArgs = append(testArgs, "-tags", "integration")
+	}
+	testArgs = append(testArgs, "-coverprofile", coverageProfile, testDir)
+	testOutput, err := exec.Command("go", testArgs...).CombinedOutput()
+	if err != nil {
+		return testOutput, errors.Wrap(err, "error running tests")
+	}
+
+	if err = createXMLCoverage(coverageProfile); err != nil {
 		return nil, err
 	}
 
