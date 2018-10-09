@@ -21,7 +21,7 @@ const (
 	integrationTestPattern     = "./tests/"
 )
 
-var baseTestArguments = [5]string{"test", "-race", "-v", "-cover", "-coverprofile"}
+var baseTestArguments = [4]string{"test", "-race", "-v", "-cover"}
 
 // NewCommand returns a new test command
 func NewCommand() *cobra.Command {
@@ -39,29 +39,16 @@ func NewCommand() *cobra.Command {
 			}
 
 			var cmdOutput []byte
-			if integration && hasIntegrationTests() {
-				cmdOutput, err = runTests(integrationCoverageProfile, []string{integrationTestPattern})
-			} else {
-				var allPackages []byte
-				allPackages, err = exec.Command("go", "list", allTestPattern).Output()
-				if err != nil {
-					return errors.Wrap(err, "error listing packages")
-				}
-				filterPackages := exec.Command("grep", "-v", "-e", "/tests$", "-e", "/mocks$")
-				filterPackages.Stdin = bytes.NewBuffer(allPackages)
-				var filterPackagesOutput []byte
-				filterPackagesOutput, err = filterPackages.Output()
-				if err != nil {
-					return errors.Wrap(err, "error excluding packages")
-				}
-				unitTestPackages := strings.Split(strings.TrimSpace(string(filterPackagesOutput)), "\n")
-				cmdOutput, err = runTests(unitCoverageProfile, unitTestPackages)
+			coverageProfile, testPattern := unitCoverageProfile, allTestPattern
+			runIntegrationTests := integration && hasIntegrationTests()
+			if runIntegrationTests {
+				coverageProfile, testPattern = integrationCoverageProfile, integrationTestPattern
 			}
+			cmdOutput, err = runTests(coverageProfile, testPattern, runIntegrationTests)
+			cmd.Printf("%s\n", cmdOutput)
 			if err != nil {
 				return err
 			}
-			cmd.Printf("%s\n", cmdOutput)
-
 			return nil
 		},
 	}
@@ -151,12 +138,15 @@ func createXMLCoverage(coverageProfile string) error {
 	return nil
 }
 
-func runTests(coverageProfile string, testDirs []string) ([]byte, error) {
-	testArgs := append(baseTestArguments[:], coverageProfile)
-	testArgs = append(testArgs, testDirs...)
+func runTests(coverageProfile string, testDir string, integrationFlag bool) ([]byte, error) {
+	testArgs := baseTestArguments[:]
+	if integrationFlag {
+		testArgs = append(testArgs, "-tags", "integration")
+	}
+	testArgs = append(testArgs, "-coverprofile", coverageProfile, testDir)
 	testOutput, err := exec.Command("go", testArgs...).CombinedOutput()
 	if err != nil {
-		return nil, errors.Wrap(err, "error running tests")
+		return testOutput, errors.Wrap(err, "error running tests")
 	}
 
 	if err = createXMLCoverage(coverageProfile); err != nil {
