@@ -40,11 +40,14 @@ func NewCommand() *cobra.Command {
 
 			var cmdOutput []byte
 			coverageProfile, testPattern := unitCoverageProfile, allTestPattern
-			runIntegrationTests := integration && hasIntegrationTests()
-			if runIntegrationTests {
+			if integration {
+				if !hasIntegrationTests() {
+					cmd.Printf("no integration tests found\n")
+					return nil
+				}
 				coverageProfile, testPattern = integrationCoverageProfile, integrationTestPattern
 			}
-			cmdOutput, err = runTests(coverageProfile, testPattern, runIntegrationTests)
+			cmdOutput, err = runTests(coverageProfile, testPattern, integration)
 			cmd.Printf("%s\n", cmdOutput)
 			if err != nil {
 				return err

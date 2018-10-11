@@ -111,10 +111,10 @@ func TestGetTag(t *testing.T) {
 		},
 		{
 			Name:                  "production build with uncommitted changes",
-			UncommittedChangesErr: errors.New("changes"),
 			Hash:                  "a1b2c3d",
 			ExpectedTag:           "",
 			ExpectedErr:           true,
+			UncommittedChangesErr: errors.New("changes"),
 		},
 		{
 			Name:        "dev build without uncommitted changes",
