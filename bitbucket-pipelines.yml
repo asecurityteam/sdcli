@@ -8,7 +8,7 @@ deps: &deps
         script:
             # Prepare the environment
             - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
-            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/repocontract-test"
+            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
             - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
             - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
 
@@ -26,7 +26,7 @@ lint: &lint
         script:
             # Prepare the environment
             - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
-            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/repocontract-test"
+            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
             - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
             - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
 
@@ -41,7 +41,7 @@ test: &test
         script:
             # Prepare the environment
             - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
-            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/repocontract-test"
+            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
             - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
             - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
 
@@ -58,7 +58,7 @@ integration: &integration
         script:
             # Prepare the environment
             - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
-            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/repocontract-test"
+            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
             - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
             - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
 
@@ -75,7 +75,7 @@ coverage: &coverage
         script:
             # Prepare the environment
             - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
-            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/repocontract-test"
+            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
             - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
             - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
 
@@ -94,7 +94,7 @@ deploy: &deploy
         script:
             # Prepare the environment
             - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
-            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/repocontract-test"
+            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
             - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
             - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
 
