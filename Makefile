@@ -97,8 +97,8 @@ run:
 	go run main.go
 
 deploy:
-	curl -u"${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD}" -T ".builds/linux" "https://atlassian.jfrog.io/atlassian/security-development/sdcli/$(VERSION)/linux/sdcli"
-	curl -u"${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD}" -T ".builds/osx" "https://atlassian.jfrog.io/atlassian/security-development/sdcli/$(VERSION)/osx/sdcli"
+	curl -X POST -H "Authorization: Token ${STATLAS_TOKEN}" -T ".builds/linux" https://statlas.prod.atl-paas.net/security-development/sdcli/$(VERSION)/linux/sdcli
+	curl -X POST -H "Authorization: Token ${STATLAS_TOKEN}" -T ".builds/osx" https://statlas.prod.atl-paas.net/security-development/sdcli/$(VERSION)/osx/sdcli
 
 clean:
 	rm -rf .builds/
