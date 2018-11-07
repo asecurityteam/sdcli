@@ -112,6 +112,7 @@ pipelines:
                 - <<: *test
                 - <<: *integration
             - <<: *coverage
+            - <<: *deploy
     default:
         - <<: *deps
         - parallel:
