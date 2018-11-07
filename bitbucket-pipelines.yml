@@ -1,0 +1,121 @@
+image: golang:latest
+
+deps: &deps
+    step:
+        name: Dependencies
+        services:
+            - docker
+        script:
+            # Prepare the environment
+            - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
+            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
+            - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
+            - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
+
+            # Download and install all dependencies
+            - make dep
+        artifacts:
+            - .builds/**
+            - vendor/**
+
+lint: &lint
+    step:
+        name: Linting
+        services:
+            - docker
+        script:
+            # Prepare the environment
+            - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
+            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
+            - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
+            - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
+
+            # Lint
+            - make lint
+
+test: &test
+    step:
+        name: Tests
+        services:
+            - docker
+        script:
+            # Prepare the environment
+            - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
+            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
+            - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
+            - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
+
+            # Run the tests
+            - make test
+        artifacts:
+            - .coverage/unit.cover.out
+
+integration: &integration
+    step:
+        name: Integration
+        services:
+            - docker
+        script:
+            # Prepare the environment
+            - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
+            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
+            - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
+            - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
+
+            # Run the integration tests
+            - make integration
+        artifacts:
+            - .coverage/integration.cover.out
+
+coverage: &coverage
+    step:
+        name: Coverage
+        services:
+            - docker
+        script:
+            # Prepare the environment
+            - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
+            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
+            - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
+            - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
+
+            # Create coverage report
+            - make coverage
+
+            # Upload coverage to codecov
+            - bash <(curl -s https://codecov.io/bash) -t "${CODECOV_REPO_TOKEN}" -r "${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}" -C "${BITBUCKET_COMMIT}" -B "${BITBUCKET_BRANCH}" -f .coverage/combined.cover.out
+
+deploy: &deploy
+    step:
+        name: "Deploy"
+        deployment: production
+        services:
+            - docker
+        script:
+            # Prepare the environment
+            - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
+            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
+            - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
+            - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
+
+            # Make and push the binaries
+            - make build
+            - make ENVIRON=prod VERSION=v1 deploy
+
+
+pipelines:
+    branches:
+        master:
+            - <<: *deps
+            - parallel:
+                - <<: *lint
+                - <<: *test
+                - <<: *integration
+            - <<: *coverage
+    default:
+        - <<: *deps
+        - parallel:
+            - <<: *lint
+            - <<: *test
+            - <<: *integration
+        - <<: *coverage
