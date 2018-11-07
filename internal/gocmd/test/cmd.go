@@ -146,7 +146,7 @@ func runTests(coverageProfile string, testDir string, integrationFlag bool) ([]b
 	if integrationFlag {
 		testArgs = append(testArgs, "-tags", "integration")
 	}
-	testArgs = append(testArgs, "-coverprofile", coverageProfile, testDir)
+	testArgs = append(testArgs, "-coverpkg", allTestPattern, "-coverprofile", coverageProfile, testDir)
 	testOutput, err := exec.Command("go", testArgs...).CombinedOutput()
 	if err != nil {
 		return testOutput, errors.Wrap(err, "error running tests")
