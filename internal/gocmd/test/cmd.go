@@ -1,7 +1,9 @@
 package test
 
 import (
+	"bufio"
 	"bytes"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -141,12 +143,36 @@ func createXMLCoverage(coverageProfile string) error {
 	return nil
 }
 
+func getCoverPkg(testDir string) (string, error) {
+	b, e := exec.Command("go", "list", testDir).CombinedOutput()
+	if e != nil {
+		return "", e
+	}
+	buff := bytes.NewReader(b)
+	reader := bufio.NewReader(buff)
+	output := bytes.NewBuffer(nil)
+	_, e = reader.ReadBytes('\n') // burn the first line which contains the root package (main.go)
+	for e == nil {
+		var rb []byte
+		rb, e = reader.ReadBytes('\n')
+		_, _ = output.Write(rb)
+	}
+	if e == io.EOF {
+		return strings.Replace(output.String(), "\n", ",", -1), nil
+	}
+	return "", e
+}
+
 func runTests(coverageProfile string, testDir string, integrationFlag bool) ([]byte, error) {
 	testArgs := baseTestArguments[:]
 	if integrationFlag {
 		testArgs = append(testArgs, "-tags", "integration")
 	}
-	testArgs = append(testArgs, "-coverpkg", allTestPattern, "-coverprofile", coverageProfile, testDir)
+	coverPkg, err := getCoverPkg(testDir)
+	if err != nil {
+		return nil, errors.Wrap(err, "error running tests")
+	}
+	testArgs = append(testArgs, "-coverpkg", coverPkg, "-coverprofile", coverageProfile, testDir)
 	testOutput, err := exec.Command("go", testArgs...).CombinedOutput()
 	if err != nil {
 		return testOutput, errors.Wrap(err, "error running tests")
