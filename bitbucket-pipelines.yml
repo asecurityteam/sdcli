@@ -8,14 +8,13 @@ deps: &deps
         script:
             # Prepare the environment
             - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
+            - curl -u "${PAC_LOGIN}:${PAC_TOKEN}" https://packages.atlassian.com/api/npm/atlassian-npm/auth/atlassian > ~/.npmrc
             - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
             - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
-            - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
 
             # Download and install all dependencies
             - make dep
         artifacts:
-            - .builds/**
             - vendor/**
 
 lint: &lint
@@ -26,9 +25,9 @@ lint: &lint
         script:
             # Prepare the environment
             - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
+            - curl -u "${PAC_LOGIN}:${PAC_TOKEN}" https://packages.atlassian.com/api/npm/atlassian-npm/auth/atlassian > ~/.npmrc
             - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
             - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
-            - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
 
             # Lint
             - make lint
@@ -41,9 +40,9 @@ test: &test
         script:
             # Prepare the environment
             - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
+            - curl -u "${PAC_LOGIN}:${PAC_TOKEN}" https://packages.atlassian.com/api/npm/atlassian-npm/auth/atlassian > ~/.npmrc
             - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
             - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
-            - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
 
             # Run the tests
             - make test
@@ -58,9 +57,9 @@ integration: &integration
         script:
             # Prepare the environment
             - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
+            - curl -u "${PAC_LOGIN}:${PAC_TOKEN}" https://packages.atlassian.com/api/npm/atlassian-npm/auth/atlassian > ~/.npmrc
             - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
             - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
-            - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
 
             # Run the integration tests
             - make integration
@@ -75,9 +74,9 @@ coverage: &coverage
         script:
             # Prepare the environment
             - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
+            - curl -u "${PAC_LOGIN}:${PAC_TOKEN}" https://packages.atlassian.com/api/npm/atlassian-npm/auth/atlassian > ~/.npmrc
             - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
             - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
-            - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
 
             # Create coverage report
             - make coverage
@@ -85,22 +84,58 @@ coverage: &coverage
             # Upload coverage to codecov
             - bash <(curl -s https://codecov.io/bash) -t "${CODECOV_REPO_TOKEN}" -r "${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}" -C "${BITBUCKET_COMMIT}" -B "${BITBUCKET_BRANCH}" -f .coverage/combined.cover.out
 
-deploy: &deploy
+deploy-dev: &deploy-dev
     step:
-        name: "Deploy"
-        deployment: production
+        name: "Deploy to dev"
+        deployment: test
         services:
             - docker
         script:
             # Prepare the environment
             - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
+            - curl -u "${PAC_LOGIN}:${PAC_TOKEN}" https://packages.atlassian.com/api/npm/atlassian-npm/auth/atlassian > ~/.npmrc
             - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
             - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
-            - apt-get update && apt-get install -y apt-transport-https ca-certificates make curl gcc git bc jq
 
-            # Make and push the binaries
-            - make build
-            - make ENVIRON=prod VERSION=v1 deploy
+            # Build and deploy the image
+            - export MICROS_TOKEN="${MICROS_DEPLOY_TOKEN}:${PIPELINES_JWT_TOKEN}" MICROS_URL="wss://micros-proxy.services.atlassian.com"
+            - make ENVIRON=dev MICROS_PWD=${PIPELINES_JWT_TOKEN} REGISTRY_USER=${BITBUCKET_CLONE_USERNAME} REGISTRY_PWD=${PIPELINES_JWT_TOKEN} REGISTRY=docker-proxy.services.atlassian.com deploy
+
+deploy-dev-manual: &deploy-dev-manual
+    step:
+        name: "Deploy to dev"
+        deployment: test
+        trigger: manual
+        services:
+            - docker
+        script:
+            # Prepare the environment
+            - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
+            - curl -u "${PAC_LOGIN}:${PAC_TOKEN}" https://packages.atlassian.com/api/npm/atlassian-npm/auth/atlassian > ~/.npmrc
+            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
+            - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
+
+            # Build and deploy the image
+            - export MICROS_TOKEN="${MICROS_DEPLOY_TOKEN}:${PIPELINES_JWT_TOKEN}" MICROS_URL="wss://micros-proxy.services.atlassian.com"
+            - make ENVIRON=dev MICROS_PWD=${PIPELINES_JWT_TOKEN} REGISTRY_USER=${BITBUCKET_CLONE_USERNAME} REGISTRY_PWD=${PIPELINES_JWT_TOKEN} REGISTRY=docker-proxy.services.atlassian.com deploy
+
+deploy-prod: &deploy-prod
+    step:
+        name: "Deploy to production"
+        deployment: production
+        trigger: manual
+        services:
+            - docker
+        script:
+            # Prepare the environment
+            - echo -e "machine bitbucket.org\nlogin ${BITBUCKET_CLONE_USERNAME}\npassword ${BITBUCKET_CLONE_PASSWORD}\n" > ~/.netrc && chmod 600 ~/.netrc
+            - curl -u "${PAC_LOGIN}:${PAC_TOKEN}" https://packages.atlassian.com/api/npm/atlassian-npm/auth/atlassian > ~/.npmrc
+            - export PATH="${GOPATH}/bin:$PATH" SRCDIR="${GOPATH}/src/bitbucket.org/asecurityteam/sdcli"
+            - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
+
+            # Build and deploy the image
+            - export MICROS_TOKEN="${MICROS_DEPLOY_TOKEN}:${PIPELINES_JWT_TOKEN}" MICROS_URL="wss://micros-proxy.services.atlassian.com"
+            - make ENVIRON=prod MICROS_PWD=${PIPELINES_JWT_TOKEN} REGISTRY_USER=sox REGISTRY_PWD=${PIPELINES_JWT_TOKEN} REGISTRY=docker-proxy.services.atlassian.com deploy
 
 
 pipelines:
@@ -112,7 +147,8 @@ pipelines:
                 - <<: *test
                 - <<: *integration
             - <<: *coverage
-            - <<: *deploy
+            - <<: *deploy-dev
+            - <<: *deploy-prod
     default:
         - <<: *deps
         - parallel:
@@ -120,3 +156,4 @@ pipelines:
             - <<: *test
             - <<: *integration
         - <<: *coverage
+        - <<: *deploy-dev-manual
