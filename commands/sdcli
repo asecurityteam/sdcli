@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Capture the package being accessed.
+PACKAGE=$1
+# Pop the $1 arg off the $@ array.
+shift
+
+case ${PACKAGE} in
+    go)
+        sdcli_go $@
+        ;;
+    *)
+        echo "Unknown package ${PACKAGE}"
+        exit 1
+        ;;
+esac
