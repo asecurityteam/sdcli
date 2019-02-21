@@ -24,6 +24,7 @@ case ${COMMAND} in
         ;;
     *)
         echo "Unknown go command ${COMMAND}"
+        sdcli_help
         exit 1
         ;;
 esac

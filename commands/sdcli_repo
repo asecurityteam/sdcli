@@ -15,6 +15,7 @@ case ${COMMAND} in
         ;;
     *)
         echo "Unknown repo command ${COMMAND}"
+        sdcli_help
         exit 1
         ;;
 esac

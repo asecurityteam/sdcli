@@ -5,12 +5,24 @@ our repository contract. Current feature set:
 
 ```bash
 sdcli
-    -   go # go project related tools
-        -   dep # Install build dependencies. Implements the `dep` contract.
-        -   lint # Run all static analysis. Implements the `lint` contract.
-        -   test # Run unit tests and record coverage. Implements the `test` contract.
-        -   integration # Run integraiton tests and record coverage. Implements `integration`.
-        -   coverage # Generate a coverage report. Implements `coverage`.
+  go
+      dep # install go project dependencies
+      lint # run our standard go linter
+      test # run unit tests
+      integration # run integration tests
+      coverage # generate a coverage report
+  repo
+      all # generic repo tools
+          add-dac # add a DAC package
+          add-micros # add a Micros descriptor
+          add-oss # add license and contributing files
+          add-pipelines # add pipelines configuration
+          audit-contract # verify the repo implements the contract
+      go # go repo tools
+          add-docker # add a Dockerfile
+          add-layout # render the standard layout
+          add-lint # add linter configuration
+          create # generate a full go project
 ```
 
 ## Usage
@@ -102,6 +114,7 @@ case ${COMMAND} in
         ;;
     *)
         echo "Unknown newfeature command ${COMMAND}"
+        sdcli_help
         exit 1
         ;;
 esac
@@ -109,3 +122,5 @@ esac
 
 From here, each command is a separate executable named `sdcli_<package>_<command>`
 that performs the function.
+
+After creating your commands, be sure to update the `sdcli_help` and this README.

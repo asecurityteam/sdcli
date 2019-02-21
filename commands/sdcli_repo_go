@@ -18,7 +18,8 @@ case ${COMMAND} in
         sdcli_repo_go_add-docker "$@"
         ;;
     *)
-        echo "Unknown all repo command ${COMMAND}"
+        echo "Unknown go repo command ${COMMAND}"
+        sdcli_help
         exit 1
         ;;
 esac

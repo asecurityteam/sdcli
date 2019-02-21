@@ -34,6 +34,7 @@ case ${PACKAGE} in
         ;;
     *)
         echo "Unknown command ${PACKAGE}"
+        sdcli_help
         exit 1
         ;;
 esac
