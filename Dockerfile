@@ -6,6 +6,10 @@ ENV APT_MAKE_VERSION=4.1-9.1 \
     GOLANGCI_VERSION=v1.12.2 \
     APT_NODE_VERSION=11.10.0-1nodesource1
 
+#########################################
+
+FROM BASE AS SYSTEM_DEPS
+
 # Install apt dependencies
 RUN apt-get update && \
     apt-get install -y \
@@ -19,9 +23,9 @@ RUN apt-get update && \
     jq && \
     apt-get upgrade -y
 
-#############################################################
+#########################################
 
-FROM BASE AS DEPS
+FROM SYSTEM_DEPS AS GO_DEPS
 
 # Install dep
 RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
@@ -37,23 +41,44 @@ RUN go get github.com/axw/gocov/... && \
 # Install lint
 RUN curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | bash -s -- -b ${GOPATH}/bin ${GOLANGCI_VERSION}
 
+#########################################
+
+FROM GO_DEPS AS JS_DEPS
+
 # Install NPM
 RUN curl -sfL https://deb.nodesource.com/setup_11.x | bash - && \
     apt-get install -y nodejs=${APT_NODE_VERSION}
+
+#########################################
+
+FROM JS_DEPS AS PYTHON_DEPS
+
+RUN apt-get install -y python3-pip
+RUN pip3 install setuptools cookiecutter
+
+#########################################
+
+FROM PYTHON_DEPS AS SSH_DEPS
 
 # Install the bitbucket SSH host
 RUN mkdir -p /home/sdcli/.ssh
 RUN echo 'bitbucket.org ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw==' >> /home/sdcli/.ssh/known_hosts
 
-#####################################################
+#########################################
 
-FROM DEPS
+FROM SSH_DEPS AS USER_DEPS
 
+# Create a non-root user to avoid permissions issues when
+# modifying files on the mounted host directories.
 RUN groupadd -r sdcli -g 1000 \
     && useradd --no-log-init -r -g sdcli -u 1000 sdcli \
     && chown -R sdcli:sdcli /opt \
     && chown -R sdcli:sdcli /go \
     && chown -R sdcli:sdcli /home/sdcli
+
+#########################################
+
+FROM USER_DEPS
 
 USER sdcli
 
