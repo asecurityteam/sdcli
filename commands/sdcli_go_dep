@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 
+# Install go project dependencies.
+# NOTE: This will begin to transition to go mod once the go1.12 release
+# is finalized.
+
 dep ensure -v
