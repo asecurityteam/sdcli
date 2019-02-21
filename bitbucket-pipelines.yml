@@ -30,7 +30,7 @@ lint: &lint
             - mkdir -p "${GOPATH}/bin" "${GOPATH}/src/bitbucket.org/asecurityteam" && ln -s "${BITBUCKET_CLONE_DIR}" "${SRCDIR}" && cd "${SRCDIR}"
 
             # Lint
-            - make lint
+            - make DIR=${BITBUCKET_CLONE_DIR} lint
 
 test: &test
     step:
