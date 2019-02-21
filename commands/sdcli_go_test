@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+mkdir -p .coverage
+PKGS="$(go list ./... | sed 1d | paste -sd "," -)"
+go test -v -cover -coverpkg=${PKGS} -coverprofile=.coverage/unit.cover.out ./...
+gocov convert .coverage/unit.cover.out | gocov-xml > .coverage/unit.xml

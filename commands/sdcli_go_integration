@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+mkdir -p .coverage
+
+# Check if integration tests are available.
+INTTESTS=$(go test -tags=integration -list . ./tests)
+if [[ "$?" != "0" ]]; then
+    echo "No integration tests found."
+    exit 0
+fi
+FOUND="$(echo ${INTTESTS} | grep 'ok')"
+if [[ ${FOUND} == "" ]]; then
+    echo "No integration tests found."
+    exit 0
+fi
+
+PKGS="$(go list ./... | sed 1d | paste -sd "," -)"
+go test -v -tags=integration -cover -coverpkg=${PKGS} -coverprofile=.coverage/integration.cover.out ./tests
+gocov convert .coverage/integration.cover.out | gocov-xml > .coverage/integration.xml

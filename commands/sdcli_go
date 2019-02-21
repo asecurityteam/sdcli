@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# Capture the target command and pop it from the args
+COMMAND="$1"
+shift
+
+case ${COMMAND} in
+    dep)
+        sdcli_go_dep $@
+        ;;
+    lint)
+        sdcli_go_lint $@
+        ;;
+    test)
+        sdcli_go_test $@
+        ;;
+    integration)
+        sdcli_go_integration $@
+        ;;
+    coverage)
+        sdcli_go_coverage $@
+        ;;
+    *)
+        echo "Unknown go command ${COMMAND}"
+        exit 1
+        ;;
+esac
