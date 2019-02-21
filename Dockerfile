@@ -53,8 +53,10 @@ RUN curl -sfL https://deb.nodesource.com/setup_11.x | bash - && \
 
 FROM JS_DEPS AS PYTHON_DEPS
 
-RUN apt-get install -y python3-pip
+RUN apt-get install -y python3-pip locales
 RUN pip3 install setuptools cookiecutter
+RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
+    && locale-gen
 
 #########################################
 
