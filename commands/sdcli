@@ -27,10 +27,13 @@ shift
 
 case ${PACKAGE} in
     go)
-        sdcli_go $@
+        sdcli_go "$@"
+        ;;
+    repo)
+        sdcli_repo "$@"
         ;;
     *)
-        echo "Unknown package ${PACKAGE}"
+        echo "Unknown command ${PACKAGE}"
         exit 1
         ;;
 esac

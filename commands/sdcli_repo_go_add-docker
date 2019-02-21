@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Add the standard go docker file to the current project.
+
+cookiecutter git@bitbucket.org:asecurityteam/template-go-docker.git

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Add a Micros service descriptor to the current project.
+
+cookiecutter git@bitbucket.org:asecurityteam/template-micros.git

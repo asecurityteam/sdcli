@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+## Add a DAC package to the current project.
+
+cookiecutter git@bitbucket.org:asecurityteam/template-dac.git

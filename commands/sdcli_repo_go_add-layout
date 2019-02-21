@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Add the standard go project skeleton.
+
+cookiecutter git@bitbucket.org:asecurityteam/template-go-layout.git

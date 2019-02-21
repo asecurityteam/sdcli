@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# This is the entry point for generic repo management commands.
+
+# Capture the target command and pop it from the args
+COMMAND="$1"
+shift
+
+case ${COMMAND} in
+    add-dac)
+        sdcli_repo_all_add-dac "$@"
+        ;;
+    add-micros)
+        sdcli_repo_all_add-micros "$@"
+        ;;
+    add-pipelines)
+        sdcli_repo_all_add-pipelines "$@"
+        ;;
+    add-oss)
+        sdcli_repo_all_add-oss "$@"
+        ;;
+    audit-contract)
+        sdcli_repo_all_audit-contract "$@"
+        ;;
+    *)
+        echo "Unknown all repo command ${COMMAND}"
+        exit 1
+        ;;
+esac

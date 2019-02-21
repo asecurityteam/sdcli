@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Add license and contributing information to the current project.
+
+cookiecutter git@bitbucket.org:asecurityteam/template-oss.git

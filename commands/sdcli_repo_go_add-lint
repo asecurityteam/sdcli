@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Add the most recent lint configuration to the current project.
+
+cookiecutter git@bitbucket.org:asecurityteam/template-go-lint.git
