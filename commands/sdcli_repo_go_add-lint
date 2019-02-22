@@ -2,4 +2,8 @@
 
 # Add the most recent lint configuration to the current project.
 
-cookiecutter git@bitbucket.org:asecurityteam/template-go-lint.git
+RENDERDIR="$(mktemp)"
+mkdir -p "${RENDERDIR}"
+cookiecutter -f -o "${RENDERDIR}" gh:asecurityteam/template-go-lint "$@"
+mv "${RENDERDIR}/**/*" .
+rm -rf "${RENDERDIR}"

@@ -2,4 +2,8 @@
 
 # Add the standard go project skeleton.
 
-cookiecutter git@bitbucket.org:asecurityteam/template-go-layout.git
+RENDERDIR="$(mktemp)"
+mkdir -p "${RENDERDIR}"
+cookiecutter -f -o "${RENDERDIR}" gh:asecurityteam/template-go-layout "$@"
+mv "${RENDERDIR}/**/*" .
+rm -rf "${RENDERDIR}"

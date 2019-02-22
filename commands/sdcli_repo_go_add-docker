@@ -2,4 +2,8 @@
 
 # Add the standard go docker file to the current project.
 
-cookiecutter git@bitbucket.org:asecurityteam/template-go-docker.git
+RENDERDIR="$(mktemp)"
+mkdir -p "${RENDERDIR}"
+cookiecutter -f -o "${RENDERDIR}" gh:asecurityteam/template-go-docker "$@"
+mv "${RENDERDIR}/**/*" .
+rm -rf "${RENDERDIR}"

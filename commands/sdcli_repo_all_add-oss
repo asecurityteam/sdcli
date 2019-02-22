@@ -2,4 +2,9 @@
 
 # Add license and contributing information to the current project.
 
-cookiecutter git@bitbucket.org:asecurityteam/template-oss.git
+RENDERDIR="$(mktemp)"
+mkdir -p "${RENDERDIR}"
+cookiecutter -f -o "${RENDERDIR}" gh:asecurityteam/template-oss "$@"
+mv "${RENDERDIR}/**/*" .
+rm -rf "${RENDERDIR}"
+

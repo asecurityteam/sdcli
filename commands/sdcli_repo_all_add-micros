@@ -2,4 +2,8 @@
 
 # Add a Micros service descriptor to the current project.
 
-cookiecutter git@bitbucket.org:asecurityteam/template-micros.git
+RENDERDIR="$(mktemp)"
+mkdir -p "${RENDERDIR}"
+cookiecutter -f -o "${RENDERDIR}" git@bitbucket.org:asecurityteam/template-micros.git "$@"
+mv "${RENDERDIR}/**/*" .
+rm -rf "${RENDERDIR}"

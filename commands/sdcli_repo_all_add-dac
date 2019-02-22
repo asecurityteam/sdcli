@@ -2,4 +2,8 @@
 
 ## Add a DAC package to the current project.
 
-cookiecutter git@bitbucket.org:asecurityteam/template-dac.git
+RENDERDIR="$(mktemp)"
+mkdir -p "${RENDERDIR}"
+cookiecutter -f -o "${RENDERDIR}" git@bitbucket.org:asecurityteam/template-dac.git "$@"
+mv "${RENDERDIR}/**/*" .
+rm -rf "${RENDERDIR}"
