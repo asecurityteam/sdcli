@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-# This is the top-level entry point for the CLI. It routes to subcommands
-# for major features.
+# This is the top-level entry point for the CLI. It dispatches
+# commands by joining all args with an _. It also allows extra
+# arguments to pass through by putting them after a -- argument.
 
 # Configure the locale to avoid ASCII/UTF8 conflicts.
 export LANG="en_US.UTF-8"
@@ -20,21 +21,24 @@ export LC_MEASUREMENT="en_US.UTF-8"
 export LC_IDENTIFICATION="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
-# Capture the package being accessed.
-PACKAGE=$1
-# Pop the $1 arg off the $@ array.
-shift
+declare -a COMMAND_PATH
+declare -a EXTRA_ARGS
+IN_EXTRA=false
 
-case ${PACKAGE} in
-    go)
-        sdcli_go "$@"
-        ;;
-    repo)
-        sdcli_repo "$@"
-        ;;
-    *)
-        echo "Unknown command ${PACKAGE}"
-        sdcli_help
-        exit 1
-        ;;
-esac
+for CURRENT_ARG in "$@"; do
+    if [[ ${CURRENT_ARG} == "--" ]]; then
+        IN_EXTRA=true
+        continue
+    fi
+    if [[ ${IN_EXTRA} == true ]]; then
+        EXTRA_ARGS+=("${CURRENT_ARG}")
+    else
+        COMMAND_PATH+=("${CURRENT_ARG}")
+    fi
+done
+
+join_by() {
+    local IFS="$1"; shift; echo "$*";
+}
+
+sdcli_"$(join_by "_" "${COMMAND_PATH[@]}")" "${EXTRA_ARGS[@]}"

@@ -1,22 +1,5 @@
 #!/usr/bin/env bash
 
 echo 'Available commands:'
-echo 'sdcli'
-echo '  go'
-echo '      dep # install go project dependencies'
-echo '      lint # run our standard go linter'
-echo '      test # run unit tests'
-echo '      integration # run integration tests'
-echo '      coverage # generate a coverage report'
-echo '  repo'
-echo '      all # generic repo tools'
-echo '          add-dac # add a DAC package'
-echo '          add-micros # add a Micros descriptor'
-echo '          add-oss # add license and contributing files'
-echo '          add-pipelines # add pipelines configuration'
-echo '          audit-contract # verify the repo implements the contract'
-echo '      go # go repo tools'
-echo '          add-docker # add a Dockerfile'
-echo '          add-layout # render the standard layout'
-echo '          add-lint # add linter configuration'
-echo '          create # generate a full go project'
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+find "${DIR}" -print | grep "sdcli_" | sed -e "s|${DIR}/||g" | grep -v "sdcli_help" | sort -b -i | sed -e "s|_| |g"
