@@ -13,8 +13,6 @@ sdcli
       coverage # generate a coverage report
   repo
       all # generic repo tools
-          add-dac # add a DAC package
-          add-micros # add a Micros descriptor
           add-oss # add license and contributing files
           add-pipelines # add pipelines configuration
           audit-contract # verify the repo implements the contract
@@ -81,46 +79,8 @@ sdcli go test
 
 ## Adding Commands
 
-To add a new language or overarching feature pack to the project then edit
-the `./commands/sdcli` file and add a new case the redirects to a new executable:
-
-```bash
-case ${PACKAGE} in
-    go)
-        sdcli_go $@
-        ;;
-    # New feature
-    newfeature)
-        sdcli_newfeature $@
-    *)
-        echo "Unknown package ${PACKAGE}"
-        exit 1
-        ;;
-esac
-```
-
-Then create a new file with the name `sdcli_<package>` that will executed commands.
-
-```bash
-#!/usr/bin/env bash
-
-# Capture the target command and pop it from the args
-COMMAND="$1"
-shift
-
-case ${COMMAND} in
-    cmd1)
-        sdcli_newfeature_cmd1 $@
-        ;;
-    *)
-        echo "Unknown newfeature command ${COMMAND}"
-        sdcli_help
-        exit 1
-        ;;
-esac
-```
-
-From here, each command is a separate executable named `sdcli_<package>_<command>`
-that performs the function.
-
-After creating your commands, be sure to update the `sdcli_help` and this README.
+The top-level `sdcli` script will dispatch commands by accumulating all the
+arguments and joining them with an `_` character. For example, `sdcli my feature`
+will be converted to `sdcli_my_feature` and executed. To add a new command, drop
+an executable file in the `./commands` directory and name it according to how you
+want the script to be called.
