@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+echo 'Available commands:'
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+find "${DIR}" -print | grep "sdcli_" | sed -e "s|${DIR}/||g" | grep -v "sdcli_help" | sort -b -i | sed -e "s|_| |g"

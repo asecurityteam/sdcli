@@ -5,12 +5,22 @@ our repository contract. Current feature set:
 
 ```bash
 sdcli
-    -   go # go project related tools
-        -   dep # Install build dependencies. Implements the `dep` contract.
-        -   lint # Run all static analysis. Implements the `lint` contract.
-        -   test # Run unit tests and record coverage. Implements the `test` contract.
-        -   integration # Run integraiton tests and record coverage. Implements `integration`.
-        -   coverage # Generate a coverage report. Implements `coverage`.
+  go
+      dep # install go project dependencies
+      lint # run our standard go linter
+      test # run unit tests
+      integration # run integration tests
+      coverage # generate a coverage report
+  repo
+      all # generic repo tools
+          add-oss # add license and contributing files
+          add-pipelines # add pipelines configuration
+          audit-contract # verify the repo implements the contract
+      go # go repo tools
+          add-docker # add a Dockerfile
+          add-layout # render the standard layout
+          add-lint # add linter configuration
+          create # generate a full go project
 ```
 
 ## Usage
@@ -69,43 +79,8 @@ sdcli go test
 
 ## Adding Commands
 
-To add a new language or overarching feature pack to the project then edit
-the `./commands/sdcli` file and add a new case the redirects to a new executable:
-
-```bash
-case ${PACKAGE} in
-    go)
-        sdcli_go $@
-        ;;
-    # New feature
-    newfeature)
-        sdcli_newfeature $@
-    *)
-        echo "Unknown package ${PACKAGE}"
-        exit 1
-        ;;
-esac
-```
-
-Then create a new file with the name `sdcli_<package>` that will executed commands.
-
-```bash
-#!/usr/bin/env bash
-
-# Capture the target command and pop it from the args
-COMMAND="$1"
-shift
-
-case ${COMMAND} in
-    cmd1)
-        sdcli_newfeature_cmd1 $@
-        ;;
-    *)
-        echo "Unknown newfeature command ${COMMAND}"
-        exit 1
-        ;;
-esac
-```
-
-From here, each command is a separate executable named `sdcli_<package>_<command>`
-that performs the function.
+The top-level `sdcli` script will dispatch commands by accumulating all the
+arguments and joining them with an `_` character. For example, `sdcli my feature`
+will be converted to `sdcli_my_feature` and executed. To add a new command, drop
+an executable file in the `./commands` directory and name it according to how you
+want the script to be called.

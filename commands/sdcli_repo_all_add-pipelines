@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# Add a pipelines yaml file to the current project.
+
+RENDERDIR="$(mktemp)"
+mkdir -p "${RENDERDIR}"
+cookiecutter -f -o "${RENDERDIR}" git@bitbucket.org:asecurityteam/template-pipelines "$@"
+mv "${RENDERDIR}/**/*" .
+rm -rf "${RENDERDIR}"
+
+

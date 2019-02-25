@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Add license and contributing information to the current project.
+
+RENDERDIR="$(mktemp)"
+mkdir -p "${RENDERDIR}"
+cookiecutter -f -o "${RENDERDIR}" gh:asecurityteam/template-oss "$@"
+mv "${RENDERDIR}/**/*" .
+rm -rf "${RENDERDIR}"
+

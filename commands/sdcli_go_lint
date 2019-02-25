@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
+# Run the static analysis suite for go projects.
+
 golangci-lint run --config .golangci.yaml ./...

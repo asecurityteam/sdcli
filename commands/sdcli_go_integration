@@ -1,19 +1,30 @@
 #!/usr/bin/env bash
 
+# Run go integration tests and generate a coverage artifact.
+# Our go projects are expected to place integration tests in a
+# /tests directory accessible from the repository root and all
+# test files must have a '+build integration' tag in them.
+#
+# If no integration tests are found then the command reports
+# that there are no tests and exists successfully.
+
 mkdir -p .coverage
 
 # Check if integration tests are available.
-INTTESTS=$(go test -tags=integration -list . ./tests)
-if [[ "$?" != "0" ]]; then
+if ! go test -tags=integration -list . ./tests; then
     echo "No integration tests found."
     exit 0
 fi
-FOUND="$(echo ${INTTESTS} | grep 'ok')"
+INTTESTS=$(go test -tags=integration -list . ./tests)
+FOUND="$(echo "${INTTESTS}" | grep 'ok')"
 if [[ ${FOUND} == "" ]]; then
     echo "No integration tests found."
     exit 0
 fi
 
-PKGS="$(go list ./... | sed 1d | paste -sd "," -)"
-go test -v -tags=integration -cover -coverpkg=${PKGS} -coverprofile=.coverage/integration.cover.out ./tests
+PKGS="$(go list ./... | paste -sd "," -)"
+if [[ -f "${PWD}/main.go" ]]; then
+    PKGS="$(go list ./... | sed 1d | paste -sd "," -)"
+fi
+go test -v -tags=integration -cover -coverpkg="${PKGS}" -coverprofile=.coverage/integration.cover.out ./tests
 gocov convert .coverage/integration.cover.out | gocov-xml > .coverage/integration.xml

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Add the standard go project skeleton.
+
+RENDERDIR="$(mktemp)"
+mkdir -p "${RENDERDIR}"
+cookiecutter -f -o "${RENDERDIR}" gh:asecurityteam/template-go-layout "$@"
+mv "${RENDERDIR}/**/*" .
+rm -rf "${RENDERDIR}"

@@ -16,7 +16,8 @@ ARTIFACT := $(REGISTRY)$(IMAGE_PATH)/$(IMAGE_NAME)
 
 dep: ;
 
-lint: ;
+lint:
+	docker run --rm -i -v "$(DIR):/mnt:ro" koalaman/shellcheck:v0.6.0 commands/*
 
 test: ;
 

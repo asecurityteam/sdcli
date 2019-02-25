@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Add the most recent lint configuration to the current project.
+
+RENDERDIR="$(mktemp)"
+mkdir -p "${RENDERDIR}"
+cookiecutter -f -o "${RENDERDIR}" gh:asecurityteam/template-go-lint "$@"
+mv "${RENDERDIR}/**/*" .
+rm -rf "${RENDERDIR}"
