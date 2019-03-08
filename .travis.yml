@@ -4,6 +4,9 @@ go:
 - 1.11.x
 services:
   - docker
+env:
+  global:
+    - TMPDIR=/tmp
 install:
   - make dep
 script:
