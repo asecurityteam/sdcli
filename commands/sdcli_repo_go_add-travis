@@ -2,10 +2,11 @@
 
 # Add a travis yaml file to the current project.
 
-RENDERDIR="$(mktemp)"
+shopt -s dotglob
+RENDERDIR="$(mktemp -d)"
 mkdir -p "${RENDERDIR}"
 cookiecutter -f -o "${RENDERDIR}" gh:asecurityteam/template-go-travis "$@"
-mv "${RENDERDIR}/**/*" .
+mv "${RENDERDIR}"/**/* .
 rm -rf "${RENDERDIR}"
 
 

@@ -3,8 +3,7 @@ FROM golang:1.11.5 AS BASE
 ENV APT_MAKE_VERSION=4.1-9.1 \
     APT_GCC_VERSION=4:6.3.0-4 \
     APT_GIT_VERSION=1:2.11.0-3+deb9u4 \
-    GOLANGCI_VERSION=v1.12.2 \
-    APT_NODE_VERSION=11.10.0-1nodesource1
+    GOLANGCI_VERSION=v1.12.2
 
 #########################################
 
@@ -47,7 +46,7 @@ FROM GO_DEPS AS JS_DEPS
 
 # Install NPM
 RUN curl -sfL https://deb.nodesource.com/setup_11.x | bash - && \
-    apt-get install -y nodejs=${APT_NODE_VERSION}
+    apt-get install -y nodejs
 
 #########################################
 
