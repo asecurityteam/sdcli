@@ -4,7 +4,7 @@
 
 RENDERDIR="$(mktemp)"
 mkdir -p "${RENDERDIR}"
-cookiecutter -f -o "${RENDERDIR}" gh:asecurityteam/template-travis "$@"
+cookiecutter -f -o "${RENDERDIR}" gh:asecurityteam/template-go-travis "$@"
 mv "${RENDERDIR}/**/*" .
 rm -rf "${RENDERDIR}"
 
