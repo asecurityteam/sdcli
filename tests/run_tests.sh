@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 RENDERDIR="$(mktemp -d)"
-echo "${RENDERDIR}"
+chmod 766 -R "${RENDERDIR}"
 docker build -t local/test/sdcli .
 docker run \
     --rm \
