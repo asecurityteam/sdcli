@@ -2,9 +2,10 @@
 
 # Add license and contributing information to the current project.
 
-RENDERDIR="$(mktemp)"
+shopt -s dotglob
+RENDERDIR="$(mktemp -d)"
 mkdir -p "${RENDERDIR}"
 cookiecutter -f -o "${RENDERDIR}" gh:asecurityteam/template-oss "$@"
-mv "${RENDERDIR}/**/*" .
+mv "${RENDERDIR}"/**/* .
 rm -rf "${RENDERDIR}"
 

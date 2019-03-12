@@ -32,12 +32,12 @@ sdcli
   repo
       all # generic repo tools
           add-oss # add license and contributing files
-          add-travis # add a travisci configuraiton
           audit-contract # verify the repo implements the contract
       go # go repo tools
           add-docker # add a Dockerfile
           add-layout # render the standard layout
           add-lint # add linter configuration
+          add-travis # add a travisci configuraiton
           create # generate a full go project
 ```
 
@@ -86,7 +86,7 @@ sdcli() {
         --env "SSH_AUTH_SOCK=/ssh-agent" \
         --mount src="$(pwd)",target="/go/src/${project_path}",type="bind" \
         -w "/go/src/${project_path}" \
-        asecurityteam/sdcli:v1 $@
+        asecurityteam/sdcli:v1 "$@"
 }
 ```
 

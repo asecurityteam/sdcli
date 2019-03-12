@@ -5,5 +5,5 @@
 sdcli_repo_go_add-layout "$@"
 sdcli_repo_go_add-lint "$@"
 sdcli_repo_go_add-docker "$@"
+sdcli_repo_go_add-travis "$@"
 sdcli_repo_all_add-oss "$@"
-sdcli_repo_all_add-travis "$@"

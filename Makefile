@@ -15,7 +15,8 @@ dep: ;
 lint:
 	docker run --rm -i -v "$(DIR):/mnt:ro" koalaman/shellcheck:v0.6.0 commands/*
 
-test: ;
+test:
+	./tests/run_tests.sh
 
 integration: ;
 
