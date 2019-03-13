@@ -50,22 +50,24 @@ The project is delivered as a docker image that contains our tooling:
 docker pull asecurityteam/sdcli:v1
 ```
 
-With the image installed you call it like:
+With the image installed you call it like (omit the first `--mount` if on Mac):
 
 ```bash
+export cwd=$(pwd)
+export project_path=${cwd#"${GOPATH}/src/"}
 docker run -ti \
-    # Mount and configure SSH inside the container.
+    # If Linux, mount and configure SSH inside the container.
     --mount src=${SSH_AUTH_SOCK},target=/ssh-agent,type=bind \
     --env SSH_AUTH_SOCK=/ssh-agent \
     # Mount the current project directory to a patch inside the container.
-    --mount src="$(pwd)",target=/go/src/github.com/asecurityteam/go-vpcflow,type=bind \
+    -v "$(pwd -L):/go/src/${project_path}" \
     # Adjust the container workspace to the newly mounted project.
-    -w /go/src/github.com/asecurityteam/go-vpcflow \
+    -w "/go/src/${project_path}" \
     # Run a command.
     asecurityteam/sdcli:v1 go test
 ```
 
-To make this easier, you can add this function to your .bashrc file:
+To make this easier, you can add this function to your .bashrc file (omit the first `--mount` if on Mac):
 
 ```bash
 sdcli() {
@@ -81,12 +83,12 @@ sdcli() {
     # placed within the gopath but should be agnostic to this fact since
     # they can be placed anywhere.
     local project_path=${cwd#"${gopath}/src/"}
-    docker run -ti \
+    docker run --rm \
         --mount src="${SSH_AUTH_SOCK}",target="/ssh-agent",type="bind" \
         --env "SSH_AUTH_SOCK=/ssh-agent" \
-        --mount src="$(pwd)",target="/go/src/${project_path}",type="bind" \
+        -v "$(pwd -L):/go/src/${project_path}" \
         -w "/go/src/${project_path}" \
-        asecurityteam/sdcli:v1 "$@"
+        asecurityteam/sdcli:v1 $@
 }
 ```
 
@@ -94,6 +96,49 @@ which will enable you to call the container like:
 
 ```bash
 sdcli go test
+```
+
+## For Shells Other than `bash`
+
+In fish shell, you create a `~/.config/fish/functions/sdcli.fish` file with 755 permissions having contents:
+
+```bash
+function sdcli
+  set cwd (pwd)
+  set gopath "$GOPATH"
+  if test -z "$gopath"
+    set gopath ~/go # default gopath since 1.8
+  end
+  # Remove gopath from the front of the directory path. The resulting
+  # path is used to construct a mount point inside the container. For
+  # go projects this results in them being placed within the gopath
+  # of the container. Other languages, such as Python, will still get
+  # placed within the gopath but should be agnostic to this fact since
+  # they can be placed anywhere.
+  set project_path (string replace "$gopath/src/" "" $cwd)
+  docker run --rm -v "$cwd:/go/src/$project_path" \
+    -w "/go/src/$project_path" \
+    asecurityteam/sdcli:v1 $argv
+end
+```
+
+Some commands are interactive, but if you run `fish` or shells other than
+`bash`, you might see "no TTY for interactive shell" or seemingly
+inexplicable "project_name [New Project]: Aborted!".  No worries!  Just run in non-interactive mode by
+specifying all args on the command line, like:
+
+```bash
+sdcli repo go create -- project_name="myproject" project_description="description" --no-input
+```
+
+Or start the Docker image with `/bin/bash` as the entrypoint and run `/usr/bin/sdcli $args` from within
+(be sure to set `$cwd` and `$project_path` first):
+
+```bash
+docker run -it \
+    --entrypoint "/bin/bash" -v "$cwd:/go/src/$project_path" \
+    -w "/go/src/$project_path" \
+    asecurityteam/sdcli:v1
 ```
 
 <a id="markdown-adding-commands" name="adding-commands"></a>
