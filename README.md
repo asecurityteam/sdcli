@@ -60,7 +60,7 @@ docker run -ti \
     --mount src=${SSH_AUTH_SOCK},target=/ssh-agent,type=bind \
     --env SSH_AUTH_SOCK=/ssh-agent \
     # Mount the current project directory to a patch inside the container.
-    -v "$(pwd -L):/go/src/${project_path}" \
+    --mount src="$(pwd -L)",target="/go/src/${project_path}",type=bind \
     # Adjust the container workspace to the newly mounted project.
     -w "/go/src/${project_path}" \
     # Run a command.
@@ -84,9 +84,9 @@ sdcli() {
     # they can be placed anywhere.
     local project_path=${cwd#"${gopath}/src/"}
     docker run --rm \
-        --mount src="${SSH_AUTH_SOCK}",target="/ssh-agent",type="bind" \
+        --mount src=${SSH_AUTH_SOCK},target=/ssh-agent,type=bind \
         --env "SSH_AUTH_SOCK=/ssh-agent" \
-        -v "$(pwd -L):/go/src/${project_path}" \
+        --mount src="$(pwd -L)",target="/go/src/${project_path}",type=bind \
         -w "/go/src/${project_path}" \
         asecurityteam/sdcli:v1 $@
 }
@@ -104,7 +104,7 @@ In fish shell, you create a `~/.config/fish/functions/sdcli.fish` file with 755 
 
 ```bash
 function sdcli
-  set cwd (pwd)
+  set cwd (pwd -L)
   set gopath "$GOPATH"
   if test -z "$gopath"
     set gopath ~/go # default gopath since 1.8
