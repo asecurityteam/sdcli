@@ -57,10 +57,10 @@ export cwd=$(pwd)
 export project_path=${cwd#"${GOPATH}/src/"}
 docker run -ti \
     # If Linux, mount and configure SSH inside the container.
-    --mount src=${SSH_AUTH_SOCK},target=/ssh-agent,type=bind \
+    --mount src="${SSH_AUTH_SOCK}",target="/ssh-agent",type="bind" \
     --env SSH_AUTH_SOCK=/ssh-agent \
     # Mount the current project directory to a patch inside the container.
-    --mount src="$(pwd -L)",target="/go/src/${project_path}",type=bind \
+    --mount src="$(pwd -L)",target="/go/src/${project_path}",type="bind" \
     # Adjust the container workspace to the newly mounted project.
     -w "/go/src/${project_path}" \
     # Run a command.
@@ -84,9 +84,9 @@ sdcli() {
     # they can be placed anywhere.
     local project_path=${cwd#"${gopath}/src/"}
     docker run --rm \
-        --mount src=${SSH_AUTH_SOCK},target=/ssh-agent,type=bind \
+        --mount src="${SSH_AUTH_SOCK}",target="/ssh-agent",type="bind" \
         --env "SSH_AUTH_SOCK=/ssh-agent" \
-        --mount src="$(pwd -L)",target="/go/src/${project_path}",type=bind \
+        --mount src="$(pwd -L)",target="/go/src/${project_path}",type="bind" \
         -w "/go/src/${project_path}" \
         asecurityteam/sdcli:v1 $@
 }
@@ -104,7 +104,7 @@ In fish shell, you create a `~/.config/fish/functions/sdcli.fish` file with 755 
 
 ```bash
 function sdcli
-  set cwd (pwd -L)
+  set cwd (pwd)
   set gopath "$GOPATH"
   if test -z "$gopath"
     set gopath ~/go # default gopath since 1.8
@@ -116,7 +116,8 @@ function sdcli
   # placed within the gopath but should be agnostic to this fact since
   # they can be placed anywhere.
   set project_path (string replace "$gopath/src/" "" $cwd)
-  docker run --rm -v "$cwd:/go/src/$project_path" \
+  docker run --rm \
+    --mount src="$cwd",target="/go/src/$project_path",type="bind" \
     -w "/go/src/$project_path" \
     asecurityteam/sdcli:v1 $argv
 end
@@ -136,7 +137,8 @@ Or start the Docker image with `/bin/bash` as the entrypoint and run `/usr/bin/s
 
 ```bash
 docker run -it \
-    --entrypoint "/bin/bash" -v "$cwd:/go/src/$project_path" \
+    --entrypoint "/bin/bash" \
+    --mount src="$cwd",target="/go/src/$project_path",type="bind" \
     -w "/go/src/$project_path" \
     asecurityteam/sdcli:v1
 ```
