@@ -8,6 +8,8 @@
 - [SDCLI - Security Development Repository Tools](#sdcli---security-development-repository-tools)
     - [Overview](#overview)
     - [Usage](#usage)
+        - [For Shells Other than `bash`](#for-shells-other-than-bash)
+    - [Generate A New Project From Templates](#generate-a-new-project-from-templates)
     - [Adding Commands](#adding-commands)
 
 <!-- /TOC -->
@@ -71,11 +73,10 @@ To make this easier, you can add this function to your .bashrc file (omit the fi
 
 ```bash
 sdcli() {
-    local cwd="$(pwd)"
-    local gopath="${GOPATH}"
-    if [[ "${gopath}" == "" ]]; then
-        gopath=~/go # default gopath since 1.8
-    fi
+    local cwd
+    local gopath
+    cwd="$(pwd)"
+    gopath="${GOPATH:-~/go}"
     # Remove gopath from the front of the directory path. The resulting
     # path is used to construct a mount point inside the container. For
     # go projects this results in them being placed within the gopath
@@ -83,12 +84,12 @@ sdcli() {
     # placed within the gopath but should be agnostic to this fact since
     # they can be placed anywhere.
     local project_path=${cwd#"${gopath}/src/"}
-    docker run --rm \
+    docker run -ti --rm \
         --mount src="${SSH_AUTH_SOCK}",target="/ssh-agent",type="bind" \
         --env "SSH_AUTH_SOCK=/ssh-agent" \
         --mount src="$(pwd -L)",target="/go/src/${project_path}",type="bind" \
         -w "/go/src/${project_path}" \
-        asecurityteam/sdcli:v1 $@
+        asecurityteam/sdcli:v1 "$@"
 }
 ```
 
@@ -98,9 +99,11 @@ which will enable you to call the container like:
 sdcli go test
 ```
 
-## For Shells Other than `bash`
+<a id="markdown-for-shells-other-than-bash" name="for-shells-other-than-bash"></a>
+### For Shells Other than `bash`
 
-In fish shell, you create a `~/.config/fish/functions/sdcli.fish` file with 755 permissions having contents:
+In fish shell, you create a `~/.config/fish/functions/sdcli.fish` file with 755
+permissions having contents:
 
 ```bash
 function sdcli
@@ -123,17 +126,17 @@ function sdcli
 end
 ```
 
-Some commands are interactive, but if you run `fish` or shells other than
-`bash`, you might see "no TTY for interactive shell" or seemingly
-inexplicable "project_name [New Project]: Aborted!".  No worries!  Just run in non-interactive mode by
-specifying all args on the command line, like:
+Some commands are interactive, but if you run `fish` or shells other than `bash`, you
+might see "no TTY for interactive shell" or seemingly inexplicable "project_name [New
+Project]: Aborted!".  No worries!  Just run in non-interactive mode by specifying all
+args on the command line, like:
 
 ```bash
 sdcli repo go create -- project_name="myproject" project_description="description" --no-input
 ```
 
-Or start the Docker image with `/bin/bash` as the entrypoint and run `/usr/bin/sdcli $args` from within
-(be sure to set `$cwd` and `$project_path` first):
+Or start the Docker image with `/bin/bash` as the entrypoint and run `/usr/bin/sdcli $args`
+from within (be sure to set `$cwd` and `$project_path` first):
 
 ```bash
 docker run -it \
@@ -142,6 +145,28 @@ docker run -it \
     -w "/go/src/$project_path" \
     asecurityteam/sdcli:v1
 ```
+
+<a id="markdown-generate-a-new-project-from-templates"
+name="generate-a-new-project-from-templates"></a>
+## Generate A New Project From Templates
+
+One of the primary use cases for our tool is creating and auditing new project
+repositories. All of our templates are written using the
+[cookiecutter](https://github.com/audreyr/cookiecutter) tool. We make fairly granular
+templates so generating a project means rendering more than one at a time. The
+default behavior is to render each of the templates and prompt through the terminal
+for input values. However, each template asks for roughly the same input values. To
+reduce the tedium, call the template functions like this:
+
+```bash
+sdcli repo go create -- \
+    project_name="Name Of Project" \
+    project_description="Long form description" \
+    --no-input
+```
+
+This passes along all the values needed for our templates to render and disables the
+prompts.
 
 <a id="markdown-adding-commands" name="adding-commands"></a>
 ## Adding Commands
