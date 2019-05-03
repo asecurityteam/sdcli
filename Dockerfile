@@ -3,7 +3,7 @@ FROM golang:1.12.4 AS BASE
 ENV APT_MAKE_VERSION=4.1-9.1 \
     APT_GCC_VERSION=4:6.3.0-4 \
     APT_GIT_VERSION=1:2.11.0-3+deb9u4 \
-    GOLANGCI_VERSION=v1.12.2
+    GOLANGCI_VERSION=v1.16.0
 
 #########################################
 
@@ -53,7 +53,7 @@ RUN curl -sfL https://deb.nodesource.com/setup_11.x | bash - && \
 FROM JS_DEPS AS PYTHON_DEPS
 
 RUN apt-get install -y python3-pip locales
-RUN pip3 install setuptools cookiecutter
+RUN pip3 install -U setuptools cookiecutter
 RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
     && locale-gen
 
