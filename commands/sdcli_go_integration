@@ -10,12 +10,12 @@
 
 mkdir -p .coverage
 
-# Check if integration tests are available.
-if ! go test -tags=integration -list . ./tests; then
-    echo "No integration tests found."
-    exit 0
-fi
 INTTESTS=$(go test -tags=integration -list . ./tests)
+FAIL="$(echo "${INTTESTS}" | grep 'FAIL')"
+if [[ ${FAIL} != "" ]]; then
+    echo "A setup or compilation failure occurred."
+    exit 1
+fi
 FOUND="$(echo "${INTTESTS}" | grep 'ok')"
 if [[ ${FOUND} == "" ]]; then
     echo "No integration tests found."
