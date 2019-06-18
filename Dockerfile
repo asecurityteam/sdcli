@@ -57,6 +57,7 @@ RUN curl https://bootstrap.pypa.io/get-pip.py | python3
 RUN pip3 install -U setuptools cookiecutter
 RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
     && locale-gen
+RUN pip3 install -U pylint
 
 #########################################
 

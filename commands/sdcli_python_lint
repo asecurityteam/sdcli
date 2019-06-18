@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+#Runs against all python source files stemming from current directory. Config file not required.
+pylint --rcfile .pylintrc
+find . -iname "*.py" | xargs pylint
+
