@@ -2,5 +2,4 @@
 
 #Runs against all python source files stemming from current directory. Config file not required.
 pylint --rcfile .pylintrc
-find . -iname "*.py" | xargs pylint
-
+find . -iname "*.py" -print0 | xargs  -0 pylint
