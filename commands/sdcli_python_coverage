@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Combines results from unit and integration tests (and any other coverage files
+# in the .pycoverage/ folder) then prints a coverage report to the terminal.
+# Python reports must be written to the .pycoverage folder instead of the
+# .coverage folder (where Go reports live.) This is so we can potentially have
+# multi-language repositories.
+
+mkdir -p .pycoverage
+coverage combine .pycoverage/.*
+coverage report
+
+

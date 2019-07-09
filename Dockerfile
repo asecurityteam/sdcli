@@ -59,6 +59,11 @@ RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
     && locale-gen
 RUN pip3 install -U pylint
 
+RUN pip3 install coverage
+RUN pip3 install pytest
+RUN pip3 install pytest-cov
+RUN pip3 install pipenv
+
 #########################################
 
 FROM PYTHON_DEPS AS SSH_DEPS
@@ -77,7 +82,8 @@ RUN groupadd -r sdcli -g 1000 \
     && useradd --no-log-init -r -g sdcli -u 1000 sdcli \
     && chown -R sdcli:sdcli /opt \
     && chown -R sdcli:sdcli /go \
-    && chown -R sdcli:sdcli /home/sdcli
+    && chown -R sdcli:sdcli /home/sdcli \
+    && chown -R sdcli:sdcli /usr/local
 
 #########################################
 

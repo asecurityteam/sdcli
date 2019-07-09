@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Unit testing relies on two config files in the target project directory:
+# .coveragerc and pytest.ini.
+#
+# pytest.ini allows you to specify which modules you want coverage information
+# for by adding addopts = --cov=[Your Module] to the file.
+# More information on pytest coverage commands can be found at:
+# https://pypi.org/project/pytest-cov/
+#
+# .coveragerc allows you to specify where coverage files are saved. For python,
+# make sure your coverage files are saved in the .pycoverage/ folder.
+# (This prevents accidentally combining go coverage files with python coverage
+# files, should we ever create a multi-language repository.)
+
+mkdir -p .pycoverage
+pipenv install
+pipenv run pytest
