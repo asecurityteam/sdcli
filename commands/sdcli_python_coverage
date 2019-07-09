@@ -9,5 +9,3 @@
 mkdir -p .pycoverage
 coverage combine .pycoverage/.*
 coverage report
-
-
