@@ -7,5 +7,5 @@
 # multi-language repositories.
 
 mkdir -p .pycoverage
-coverage combine .pycoverage/.*
+coverage combine .pycoverage/*.coverage
 coverage report
