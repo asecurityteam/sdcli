@@ -98,6 +98,28 @@ which will enable you to call the container like:
 ```bash
 sdcli go test
 ```
+For python tooling, you can call the container with:
+
+```bash
+export cwd=$(pwd)
+export project_path=${cwd#"${GOPATH}/src/"}
+docker run -ti \
+    # If Linux, mount and configure SSH inside the container.
+    --mount src="${SSH_AUTH_SOCK}",target="/ssh-agent",type="bind" \
+    --env SSH_AUTH_SOCK=/ssh-agent \
+    # Mount the current project directory to a patch inside the container.
+    --mount src="$(pwd -L)",target="/go/src/${project_path}",type="bind" \
+    # Adjust the container workspace to the newly mounted project.
+    -w "/go/src/${project_path}" \
+    # Run a command.
+    asecurityteam/sdcli:v1 python lint
+```
+
+Or, if you've already added the sdcli bash function to your .bashrc file, you can simply type:
+
+```bash
+sdcli python lint
+```
 
 <a id="markdown-for-shells-other-than-bash" name="for-shells-other-than-bash"></a>
 ### For Shells Other than `bash`
