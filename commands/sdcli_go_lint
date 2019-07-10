@@ -2,4 +2,4 @@
 
 # Run the static analysis suite for go projects.
 
-golangci-lint run --config .golangci.yaml ./...
+golangci-lint run --config .golangci.yaml ./... -v
