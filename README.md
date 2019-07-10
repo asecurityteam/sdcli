@@ -41,6 +41,11 @@ sdcli
           add-lint # add linter configuration
           add-travis # add a travisci configuraiton
           create # generate a full go project
+  python
+      dep # install python project dependencies
+      lint # run pylint against the project
+      test # run unit tests
+      coverage # generate a coverage report
 ```
 
 <a id="markdown-usage" name="usage"></a>
