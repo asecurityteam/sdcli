@@ -63,6 +63,8 @@ RUN pip3 install coverage
 RUN pip3 install pytest
 RUN pip3 install pytest-cov
 RUN pip3 install pipenv
+RUN pip3 install oyaml
+RUN pip3 install --upgrade ccextender
 
 #########################################
 
@@ -92,5 +94,7 @@ FROM USER_DEPS
 USER sdcli
 
 COPY ./commands/* /usr/bin/
+
+COPY ccextender.yaml /home/sdcli/
 
 ENTRYPOINT [ "sdcli" ]

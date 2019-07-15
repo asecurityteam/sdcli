@@ -1,0 +1,45 @@
+CCX_Version: 1.1
+standard-context:
+  project_name: "My SecDev OSS Project"
+  project_slug: "my-secdev-oss-project"
+  project_description: "A new SecDev project created with CCExtender"
+  project_namespace: "asecurityteam"
+decisions:
+  docker:
+    query:
+      prompt: "Is this [1] a dockerized service?"
+    docker:
+      - docker
+  go:
+    query:
+      prompt: "Is this [1] a go service?"
+    go:
+      - go-service
+      - oss
+change-packs:
+  docker:
+    template-go-docker:
+  go-service:
+    template-go-layout:
+    template-go-lint:
+  oss:
+    template-oss:
+locations:
+  home:
+    - https://github.com/asecurityteam/
+  template-go-docker:
+    - $!home$
+    - template-go-docker/
+  template-go-layout:
+    - $!home$
+    - template-go-layout/
+  template-oss:
+    - $!home$
+    - template-oss/
+  template-go-lint:
+    - $!home$
+    - template-go-lint/
+  template-standards:
+    - $!home$
+    - template-oss/
+

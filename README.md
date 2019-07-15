@@ -41,6 +41,7 @@ sdcli
           add-lint # add linter configuration
           add-travis # add a travisci configuraiton
           create # generate a full go project
+      build # begins the interactive build process
   python
       dep # install python project dependencies
       lint # run pylint against the project
