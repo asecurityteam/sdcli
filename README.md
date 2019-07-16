@@ -49,6 +49,7 @@ sdcli
       coverage # generate a coverage report
   yaml
       lint #runs yamllint against all yamls in current directory
+  version # lists the versions of the installed languages and applications in SDCLI
 ```
 
 <a id="markdown-usage" name="usage"></a>
