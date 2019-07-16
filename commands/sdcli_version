@@ -4,17 +4,17 @@
 
 YELLOW=$(tput setaf 3)
 GREEN=$(tput setaf 2)
-BLUE=$(tput setaf 4)
+CYAN=$(tput setaf 6)
 NORMAL=$(tput sgr0)
 
 
-printf "${GREEN}\nGo-related versions\n${NORMAL}"
+printf "%s\nGo-related versions\n%s" "${GREEN}" "${NORMAL}"
 
 go version
 golangci-lint --version
 dep version
 
-printf "${BLUE}\nPython-related versions\n${NORMAL}"
+printf "%s\nPython-related versions\n%s" "${CYAN}" "${NORMAL}"
 
 python --version
 pylint --version
@@ -22,7 +22,7 @@ pytest --version
 pipenv --version
 coverage --version
 
-printf "${YELLOW}\nEtc\n${NORMAL}"
+printf "%s\nEtc\n%s" "${YELLOW}" "${NORMAL}"
 
 cookiecutter --version
 
