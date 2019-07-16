@@ -3,5 +3,7 @@
 # Runs yamllint against all yaml files in current directory
 # Will read from a .yamllint config file if one is present in current directory
 # More about yamllint: https://github.com/adrienverge/yamllint
+# And a reference for its rules:
+# https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules.document_start
 
 yamllint .
