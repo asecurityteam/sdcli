@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+#Lists the versions of the various languages and applications installed on SDCLI's image
+
 YELLOW=$(tput setaf 3)
 GREEN=$(tput setaf 2)
 BLUE=$(tput setaf 4)
