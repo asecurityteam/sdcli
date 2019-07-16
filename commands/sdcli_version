@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+YELLOW=$(tput setaf 3)
+GREEN=$(tput setaf 2)
+BLUE=$(tput setaf 4)
+NORMAL=$(tput sgr0)
+
+
+printf "${GREEN}\nGo-related versions\n${NORMAL}"
+
+go version
+golangci-lint --version
+dep version
+
+printf "${BLUE}\nPython-related versions\n${NORMAL}"
+
+python --version
+pylint --version
+pytest --version
+pipenv --version
+coverage --version
+
+printf "${YELLOW}\nEtc\n${NORMAL}"
+
+cookiecutter --version
+
+yamllint --version
+
