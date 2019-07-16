@@ -65,6 +65,7 @@ RUN pip3 install pytest-cov
 RUN pip3 install pipenv
 RUN pip3 install oyaml
 RUN pip3 install --upgrade ccextender
+RUN pip3 install yamllint
 
 #########################################
 

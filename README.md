@@ -47,6 +47,8 @@ sdcli
       lint # run pylint against the project
       test # run unit tests
       coverage # generate a coverage report
+  yaml
+      lint #runs yamllint against all yamls in current directory
 ```
 
 <a id="markdown-usage" name="usage"></a>
