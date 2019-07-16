@@ -42,4 +42,3 @@ locations:
   template-standards:
     - $!home$
     - template-oss/
-
