@@ -1,0 +1,17 @@
+[packages]
+pytest = "*"
+coverage = "*"
+setuptools = "*"
+pytest-cov = "*"
+oyaml = "*"
+pylint = "*"
+cookiecutter = "*"
+pathlib2 = "*"
+codecov = "*"
+twine = "*"
+
+[requires]
+python_version = "3"
+
+[dev-packages]
+pylint = "*"
