@@ -1,0 +1,7 @@
+{
+    "project_name": "New Project",
+    "project_slug": "{{cookiecutter.project_name|lower|replace(' ', '-')|replace('_', '-')}}",
+    "project_description": "",
+    "notification_email": "security-engineering@atlassian.com",
+    "project_namespace": "asecurityteam"
+}
