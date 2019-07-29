@@ -117,7 +117,7 @@ change-packs:
     template-micros:
       service_descriptor: "
                            \ benthos-input:\n
-                           \   image: ${BENTHOS_INPUT_ARTIFACT_NAME} #docker.atl-paas.net/sox/asecurityteam/sec-nexpose-asset-producer-benthos-input\n
+                           \   image: ${BENTHOS_INPUT_ARTIFACT_NAME}\n
                            \   tag: ${ARTIFACT_VERSION}\n
                            \   deployRestartCount: 3\n
                            \   ports:\n
@@ -126,7 +126,7 @@ change-packs:
                            \     - gateway-incoming-private\n
                            \     - statsd-service-sidecar\n
                            \ gateway-incoming-private:\n
-                           \   image: ${GATEWAY_INCOMING_PRIVATE_ARTIFACT_NAME} #docker.atl-paas.net/sox/asecurityteam/sec-awsconfig-filterd-gateway-incoming-private\n
+                           \   image: ${GATEWAY_INCOMING_PRIVATE_ARTIFACT_NAME}\n
                            \   tag: ${ARTIFACT_VERSION}\n
                            \   deployRestartCount: 3\n
                            \   links:\n
@@ -143,8 +143,8 @@ change-packs:
                        \   environment:\n
                        \     APP_INPUT_ENDPOINT: \"http://gateway-inbound-private:8082/event\"\n
                        \     PORTS_BENTHOS_INPUT_STREAMS: \"4195\"\n
-                       \     SQS_CONFIG_QUEUE_URL: \"\"\n
-                       \     SQS_CONFIG_QUEUE_REGION: \"\"\n
+                       \     SQS_INPUT_QUEUE_URL: \"\"\n
+                       \     SQS_INPUT_QUEUE_REGION: \"\"\n
                        \ gateway-incoming-private:\n
                        \   build:\n
                        \     context: .\n
@@ -168,7 +168,7 @@ change-packs:
     template-micros:
       service_descriptor: "
                            \ benthos-output:\n
-                           \   image: ${BENTHOS_OUTPUT_ARTIFACT_NAME} #docker.atl-paas.net/sox/asecurityteam/sec-nexpose-asset-producer-benthos-output\n
+                           \   image: ${BENTHOS_OUTPUT_ARTIFACT_NAME}\n
                            \   tag: ${ARTIFACT_VERSION}\n
                            \   deployRestartCount: 3\n
                            \   ports:\n
@@ -176,7 +176,7 @@ change-packs:
                            \   links:\n
                            \     - statsd-service-sidecar\n
                            \ gateway-outbound:\n
-                           \   image: ${GWO_ARTIFACT_NAME} #docker.atl-paas.net/sox/asecurityteam/sec-ipam-facade-gateway-outbound\n
+                           \   image: ${GWO_ARTIFACT_NAME}\n
                            \   tag: ${ARTIFACT_VERSION}\n
                            \   deployRestartCount: 3\n
                            \   links:\n
@@ -223,7 +223,7 @@ change-packs:
     template-micros:
       service_descriptor: "
                            \ streamer-manager:\n
-                           \   image: ${SM_ARTIFACT_NAME} #docker.atl-paas.net/sox/asecurityteam/sec-awsconfig-transformerd-streamer-manager\n
+                           \   image: ${SM_ARTIFACT_NAME}\n
                            \   tag: ${ARTIFACT_VERSION}\n
                            \   links:\n
                            \     - benthos-input\n
@@ -268,10 +268,6 @@ locations:
     - /home/sdcli/oss-templates/
   bitbucket:
     - /home/sdcli/templates/
-  local-bb:
-    - /Users/aslape/templates/bitbucket-new/
-  local-gh:
-    - /Users/aslape/templates/github-new/
   template-docker:
     - $!github$
     - template-docker
