@@ -1,0 +1,14 @@
+language: python
+sudo: false
+python: 3.5
+services:
+  - docker
+install:
+  - chmod 777 -R "$(pwd)"
+  - make dep
+script:
+  - make lint
+  - make test
+  - make integration
+  - make coverage
+  - bash <(curl -s https://codecov.io/bash) -f .pycoverage/combined.cover.out
