@@ -141,7 +141,7 @@ change-packs:
                        \       REGISTRY: ${REGISTRY}\n
                        \   image: ${IMAGE}-benthos-input:${TAG}\n
                        \   environment:\n
-                       \     APP_INPUT_ENDPOINT: \"http://gateway-inbound-private:8082/event\"\n
+                       \     APP_INPUT_ENDPOINT: \"http://gateway-incoming-private:8082/event\"\n
                        \     PORTS_BENTHOS_INPUT_STREAMS: \"4195\"\n
                        \     SQS_INPUT_QUEUE_URL: \"\"\n
                        \     SQS_INPUT_QUEUE_REGION: \"\"\n
