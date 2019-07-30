@@ -1,24 +1,24 @@
 [submodule "oss-templates/template-base"]
 	path = oss-templates/template-base
-	url = git@github.com:asecurityteam/template-base.git
+	url = https://github.com/asecurityteam/template-base.git
 	branch = master
 [submodule "oss-templates/template-go-base"]
 	path = oss-templates/template-go-base
-	url = git@github.com:asecurityteam/template-go-base.git
+	url = https://github.com/asecurityteam/template-go-base.git
 	branch = master
 [submodule "oss-templates/template-python-base"]
 	path = oss-templates/template-python-base
-	url = git@github.com:asecurityteam/template-python-base.git
+	url = https://github.com/asecurityteam/template-python-base.git
 	branch = master
 [submodule "oss-templates/template-python-service"]
 	path = oss-templates/template-python-service
-	url = git@github.com:asecurityteam/template-python-service.git
+	url = https://github.com/asecurityteam/template-python-service.git
 	branch = master
 [submodule "oss-templates/template-go-service"]
 	path = oss-templates/template-go-service
-	url = git@github.com:asecurityteam/template-go-service.git
+	url = https://github.com/asecurityteam/template-go-service.git
 	branch = master
 [submodule "oss-templates/template-docker"]
 	path = oss-templates/template-docker
-	url = git@github.com:asecurityteam/template-docker.git
+	url = https://github.com/asecurityteam/template-docker.git
 	branch = master
