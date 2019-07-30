@@ -101,6 +101,4 @@ COPY ./oss-templates/ /home/sdcli/oss-templates/
 
 COPY ./commands/* /usr/bin/
 
-COPY ccextender.yaml /home/sdcli/
-
 ENTRYPOINT [ "sdcli" ]
