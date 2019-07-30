@@ -1,44 +1,312 @@
 CCX_Version: 1.1
 standard-context:
-  project_name: "My SecDev OSS Project"
-  project_slug: "my-secdev-oss-project"
-  project_description: "A new SecDev project created with CCExtender"
+  project_name: "New Project"
+  project_slug: "new-project"
   project_namespace: "asecurityteam"
+  project_description: "Description"
+  notification_email: "security-engineering@atlassian.com"
 decisions:
-  docker:
+  language:
     query:
-      prompt: "Is this [1] a dockerized service?"
-    docker:
-      - docker
-  go:
+      prompt: "Will this project use [1] Golang or [2] Python?"
+    golang:
+      - golang-base
+    python:
+      - python-base
+  repo-type:
     query:
-      prompt: "Is this [1] a go service?"
-    go:
-      - go-service
-      - oss
+      prompt: "Will your project be [1] a service or [2] a library?"
+    service:
+      - service
+    library:
+      - library
+  source-python-service:
+    query:
+      prompt: "Will this be [1] an open source or [2] a private source project?"
+      include-if:
+        - python
+        - service
+    python-open:
+      - python-open-service
+    python-private:
+      - python-private-service
+  source-python-library:
+    query:
+      prompt: "Will this be [1] an open source or [2] a private source project?"
+      include-if:
+        - python
+        - library
+    python-open:
+      - python-open-library
+    python-private:
+      - python-private-library
+  source-golang-service:
+    query:
+      prompt: "Will this be [1] an open source or [2] a private source project?"
+      include-if:
+        - golang
+        - service
+    golang-open:
+      - golang-open-service
+    golang-private:
+      - golang-private-service
+  source-golang-library:
+    query:
+      prompt: "Will this be [1] an open source or [2] a private source project?"
+      include-if:
+        - golang
+        - library
+    golang-open:
+      - golang-open-library
+    golang-private:
+      - golang-private-library
+  io:
+    query:
+      prompt: "Will you need [1] both an input stream and output stream, [2] just an input stream, [3] just an output stream, or [0] no message streams?"
+      exclude-if:
+        - golang-open
+        - python-open
+        - library
+    both-io:
+      - input
+      - output
+      - streamer-manager
+    input:
+      - input
+      - streamer-manager
+    output:
+      - output
+      - streamer-manager
 change-packs:
-  docker:
-    template-go-docker:
-  go-service:
-    template-go-layout:
-    template-go-lint:
-  oss:
-    template-oss:
+  golang-base:
+    template-base:
+    template-go-base:
+  python-base:
+    template-base:
+    template-python-base:
+  library:
+  service:
+  golang-open-library:
+    # Currently nothing needed here
+  python-open-library:
+    # Currently nothing needed here
+  golang-private-library:
+    template-go-private-library:
+  python-private-library:
+    # Currently nothing needed here
+  python-open-service:
+    template-makefile:
+        sdcli_lang: python
+    template-python-open-service:
+    template-docker:
+  python-private-service:
+    template-makefile:
+        sdcli_lang: python
+    template-python-private-service:
+  golang-open-service:
+    template-go-open-service:
+    template-docker:
+    template-makefile:
+      sdcli_lang: go
+  golang-private-service:
+    template-go-private-service:
+    template-makefile:
+      sdcli_lang: go
+  input:
+    template-inbound:
+    template-micros:
+      service_descriptor: "
+                           \ benthos-input:\n
+                           \   image: ${BENTHOS_INPUT_ARTIFACT_NAME}\n
+                           \   tag: ${ARTIFACT_VERSION}\n
+                           \   deployRestartCount: 3\n
+                           \   ports:\n
+                           \     - \"4195:4195\"\n
+                           \   links:\n
+                           \     - gateway-incoming-private\n
+                           \     - statsd-service-sidecar\n
+                           \ gateway-incoming-private:\n
+                           \   image: ${GATEWAY_INCOMING_PRIVATE_ARTIFACT_NAME}\n
+                           \   tag: ${ARTIFACT_VERSION}\n
+                           \   deployRestartCount: 3\n
+                           \   links:\n
+                           \     - app\n
+                           \     - statsd-service-sidecar"
+      docker_compose: "
+                       \ benthos-input:\n
+                       \   build:\n
+                       \     context: .\n
+                       \     dockerfile: benthos-input.Dockerfile\n
+                       \     args:\n
+                       \       REGISTRY: ${REGISTRY}\n
+                       \   image: ${IMAGE}-benthos-input:${TAG}\n
+                       \   environment:\n
+                       \     APP_INPUT_ENDPOINT: \"http://gateway-inbound-private:8082/event\"\n
+                       \     PORTS_BENTHOS_INPUT_STREAMS: \"4195\"\n
+                       \     SQS_INPUT_QUEUE_URL: \"\"\n
+                       \     SQS_INPUT_QUEUE_REGION: \"\"\n
+                       \ gateway-incoming-private:\n
+                       \   build:\n
+                       \     context: .\n
+                       \     dockerfile: gateway-incoming-private.Dockerfile\n
+                       \     args:\n
+                       \       REGISTRY: ${REGISTRY}\n
+                       \   image: ${IMAGE}-gateway-incoming-private:${TAG}\n
+                       \   environment:\n
+                       \     PORTS_GATEWAY_INCOMING_PRIVATE: 8082\n
+                       \     APP_ENDPOINT: \"http://app:8081\""
+    template-makefile:
+      makefile_image: "BENTHOS_INPUT_IMAGE_NAME := $(APP_IMAGE_NAME)-benthos-input
+                       \nGATEWAY_INCOMING_PRIVATE_IMAGE_NAME := $(APP_IMAGE_NAME)-gateway-incoming-private"
+      makefile_hack: "MICROS_HACK_ARTIFACT_BENTHOS_INPUT := docker.atl-paas.net$(IMAGE_PATH)/$(BENTHOS_INPUT_IMAGE_NAME)
+                      \nMICROS_HACK_ARTIFACT_GW_INCOMING_PRIVATE := docker.atl-paas.net$(IMAGE_PATH)/$(GATEWAY_INCOMING_PRIVATE_IMAGE_NAME)"
+      makefile_hack_deploy: "
+                             \   BENTHOS_INPUT_ARTIFACT_NAME=$(MICROS_HACK_ARTIFACT_BENTHOS_INPUT) \\\n
+                             \   GW_INCOMING_PRIVATE_ARTIFACT_NAME=$(MICROS_HACK_ARTIFACT_GW_INCOMING_PRIVATE) \\"
+  output:
+    template-outbound:
+    template-micros:
+      service_descriptor: "
+                           \ benthos-output:\n
+                           \   image: ${BENTHOS_OUTPUT_ARTIFACT_NAME}\n
+                           \   tag: ${ARTIFACT_VERSION}\n
+                           \   deployRestartCount: 3\n
+                           \   ports:\n
+                           \     - \"4196:4196\"\n
+                           \   links:\n
+                           \     - statsd-service-sidecar\n
+                           \ gateway-outbound:\n
+                           \   image: ${GWO_ARTIFACT_NAME}\n
+                           \   tag: ${ARTIFACT_VERSION}\n
+                           \   deployRestartCount: 3\n
+                           \   links:\n
+                           \     - benthos-output\n
+                           \     - statsd-service-sidecar\n
+                           \   ports:\n
+                           \     - \"8086:8086\""
+      docker_compose: "
+                       \ benthos-output:\n
+                       \   build:\n
+                       \     context: .\n
+                       \     dockerfile: benthos-output.Dockerfile\n
+                       \     args:\n
+                       \       REGISTRY: ${REGISTRY}\n
+                       \   image: ${IMAGE}-benthos-output:${TAG}\n
+                       \   environment:\n
+                       \     PORTS_BENTHOS_OUTPUT: 8086\n
+                       \     SQS_OUTPUT_QUEUE_URL: \"\"\n
+                       \     SQS_OUTPUT_QUEUE_REGION: \"\"\n
+                       \ gateway-outbound:\n
+                       \   build:\n
+                       \     context: .\n
+                       \     dockerfile: gateway-outbound.Dockerfile\n
+                       \   image: ${IMAGE}-gateway-outbound:${TAG}\n
+                       \   environment:\n
+                       \     SERVERFULL_RUNTIME_STATS_OUTPUT: DATADOG\n
+                       \     SERVERFULL_RUNTIME_STATS_DATADOG_PACKETSIZE: 32768\n
+                       \     SERVERFULL_RUNTIME_STATS_DATADOG_TAGS:\n
+                       \     SERVERFULL_RUNTIME_STATS_DATADOG_FLUSHINTERVAL: 10s\n
+                       \     SERVERFULL_RUNTIME_STATS_DATADOG_ADDRESS: statsd:8125\n
+                       \     HTTPPRODUCER_API_HOST: http://benthos-output:4196\n
+                       \   ports:\n
+                       \     - 8082:8082"
+    template-makefile:
+      makefile_image: "BENTHOS_OUTPUT_IMAGE_NAME := $(APP_IMAGE_NAME)-benthos-output
+                      \nGATEWAY_OUTBOUND_IMAGE_NAME := $(APP_IMAGE_NAME)-gateway-outbound"
+      makefile_hack: "MICROS_HACK_ARTIFACT_BENTHOS_OUTPUT := docker.atl-paas.net$(IMAGE_PATH)/$(BENTHOS_OUTPUT_IMAGE_NAME)
+                      \nMICROS_HACK_ARTIFACT_GW_OUTBOUND := docker.atl-paas.net$(IMAGE_PATH)/$(GATEWAY_OUTBOUND_IMAGE_NAME)"
+      makefile_hack_deploy: "
+                             \   BENTHOS_OUTPUT_ARTIFACT_NAME=$(MICROS_HACK_ARTIFACT_BENTHOS_OUTPUT) \\\n
+                             \   GW_OUTBOUND_ARTIFACT_NAME=$(MICROS_HACK_ARTIFACT_GW_OUTBOUND) \\"
+  streamer-manager:
+    template-streamer-manager:
+    template-micros:
+      service_descriptor: "
+                           \ streamer-manager:\n
+                           \   image: ${SM_ARTIFACT_NAME}\n
+                           \   tag: ${ARTIFACT_VERSION}\n
+                           \   links:\n
+                           \     - benthos-input\n
+                           \     - statsd-service-sidecar\n
+                           \   ports:\n
+                           \     - \"8085:8085\"\n
+                           \   deployRestartCount: 3\n
+                           \ lifecycle:\n
+                           \   image: docker.atl-paas.net/sox/asecurityteam/microslifecycle\n
+                           \   tag: latest\n
+                           \   links:\n
+                           \     - streamer-manager\n
+                           \     - statsd-service-sidecar\n
+                           \   deployRestartCount: 3"
+      docker_compose: "
+                       \ streamer-manager:\n
+                       \   build:\n
+                       \     context: .\n
+                       \     dockerfile: streamer-manager.Dockerfile\n
+                       \     args:\n
+                       \       REGISTRY: ${REGISTRY}\n
+                       \   image: ${IMAGE}-streamer-manager:${TAG}\n
+                       \   ports:\n
+                       \     - 8085:8085\n
+                       \   environment:\n
+                       \     STREAMERMANAGER_HTTPSERVER_ADDRESS: \":8085\"\n
+                       \     STREAMERMANAGER_LOGGER_OUTPUT: \"STDOUT\"\n
+                       \     STREAMERMANAGER_STATS_OUTPUT: \"NULL\"\n
+                       \     STREAMERMANAGER_DIRECTORY: \"/configs\"\n
+                       \     STREAMERMANAGER_PATH: \"/lifecycle\"\n
+                       \     STREAMERMANAGER_DESTINATION: \"http://benthos-input:4195\"\n
+                       \ lifecycle:\n
+                       \   image: docker.atl-paas.net/sox/asecurityteam/microslifecycle:latest\n
+                       \   environment:\n
+                       \     MICROSLIFECYCLE_HTTP_NOTIFICATIONS: \"http://streamer-manager:8085/lifecycle\""
+    template-makefile:
+      makefile_image: "STREAMER_MANAGER_IMAGE_NAME := $(APP_IMAGE_NAME)-streamer-manager"
+      makefile_hack: "MICROS_HACK_ARTIFACT_SM := docker.atl-paas.net$(IMAGE_PATH)/$(STREAMER_MANAGER_IMAGE_NAME)"
+      makefile_hack_deploy: "\    SM_ARTIFACT_NAME=$(MICROS_HACK_ARTIFACT_SM) \\"
 locations:
-  home:
-    - https://github.com/asecurityteam/
-  template-go-docker:
-    - $!home$
-    - template-go-docker/
-  template-go-layout:
-    - $!home$
-    - template-go-layout/
-  template-oss:
-    - $!home$
-    - template-oss/
-  template-go-lint:
-    - $!home$
-    - template-go-lint/
-  template-standards:
-    - $!home$
-    - template-oss/
+  github:
+    - /home/sdcli/oss-templates/
+  bitbucket:
+    - /home/sdcli/templates/
+  template-docker:
+    - $!github$
+    - template-docker
+  template-base:
+    - $!github$
+    - template-base
+  template-go-base:
+    - $!github$
+    - template-go-base
+  template-python-base:
+    - $!github$
+    - template-python-base
+  template-makefile:
+    - $!bitbucket$
+    - template-makefile
+  template-go-private-library:
+    - $!bitbucket$
+    - template-go-library
+  template-python-open-service:
+    - $!github$
+    - template-python-service
+  template-python-private-service:
+    - $!bitbucket$
+    - template-python-service
+  template-go-open-service:
+    - $!github$
+    - template-go-service
+  template-go-private-service:
+    - $!bitbucket$
+    - template-go-service
+  template-inbound:
+    - $!bitbucket$
+    - template-inbound
+  template-outbound:
+    - $!bitbucket$
+    - template-outbound
+  template-micros:
+    - $!bitbucket$
+    - template-micros-ccx
+  template-streamer-manager:
+    - $!bitbucket$
+    - template-streamer-manager
