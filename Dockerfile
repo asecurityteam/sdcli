@@ -3,7 +3,8 @@ FROM golang:1.12.4 AS BASE
 ENV APT_MAKE_VERSION=4.1-9.1 \
     APT_GCC_VERSION=4:6.3.0-4 \
     APT_GIT_VERSION=1:2.11.0-3+deb9u4 \
-    GOLANGCI_VERSION=v1.16.0
+    GOLANGCI_VERSION=v1.16.0 \
+    LANG=C.UTF-8
 
 #########################################
 
@@ -64,7 +65,7 @@ RUN pip3 install pytest
 RUN pip3 install pytest-cov
 RUN pip3 install pipenv
 RUN pip3 install oyaml
-RUN pip3 install --upgrade ccextender
+RUN pip3 install --upgrade git+git://github.com/asecurityteam/ccextender
 RUN pip3 install yamllint
 
 #########################################
@@ -94,8 +95,10 @@ FROM USER_DEPS
 
 USER sdcli
 
-COPY ./commands/* /usr/bin/
+RUN mkdir -p /home/sdcli/oss-templates/
 
-COPY ccextender.yaml /home/sdcli/
+COPY ./oss-templates/ /home/sdcli/oss-templates/
+
+COPY ./commands/* /usr/bin/
 
 ENTRYPOINT [ "sdcli" ]
