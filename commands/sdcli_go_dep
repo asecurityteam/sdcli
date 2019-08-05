@@ -4,4 +4,8 @@
 # NOTE: This will begin to transition to go mod once the go1.12 release
 # is finalized.
 
-dep ensure -v
+if test -f "go.sum"; then
+    GO111MODULE=on go mod vendor
+else
+    dep ensure -v
+fi
