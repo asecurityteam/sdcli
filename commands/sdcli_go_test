@@ -10,7 +10,13 @@ PKGS="$(go list ./... | paste -sd "," -)"
 if [[ -f "${PWD}/main.go" ]]; then
     PKGS="$(go list ./... | sed 1d | paste -sd "," -)"
 fi
-go test -v -cover -coverpkg="${PKGS}" -coverprofile=.coverage/unit.cover.out ./...
+
+if test -f "go.mod"; then
+    GO111MODULE=on go test -mod=vendor -v -cover -coverpkg="${PKGS}" -coverprofile=.coverage/unit.cover.out ./...
+else
+    go test -v -cover -coverpkg="${PKGS}" -coverprofile=.coverage/unit.cover.out ./...
+fi
+
 _EXIT_CODE=$?
 gocov convert .coverage/unit.cover.out | gocov-xml > .coverage/unit.xml
 exit ${_EXIT_CODE}
