@@ -2,4 +2,8 @@
 
 # Run the static analysis suite for go projects.
 
-golangci-lint run --config .golangci.yaml ./... -v
+if test -f "go.mod"; then
+    GO111MODULE=on golangci-lint run --config .golangci.yaml ./... -v
+else
+    golangci-lint run --config .golangci.yaml ./... -v
+fi
