@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 #Lists the versions of the various languages and applications installed on SDCLI's image
-
+# suppress color coding if TERM was not set
+: ${TERM:=dumb}
 YELLOW=$(tput setaf 3)
 GREEN=$(tput setaf 2)
 CYAN=$(tput setaf 6)
