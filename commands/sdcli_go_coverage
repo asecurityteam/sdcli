@@ -3,6 +3,11 @@
 # Generate a combined coverage report that can be reported to codecov
 # and report combined coverage results to the terminal.
 
+if test -f "go.mod"; then
+    export GOFLAGS='-mod=vendor'
+    export GO111MODULE=on
+fi
+
 mkdir -p .coverage
 gocovmerge .coverage/*.cover.out > .coverage/combined.cover.out
 gocov convert .coverage/combined.cover.out | gocov-xml > .coverage/combined.xml

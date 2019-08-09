@@ -5,7 +5,9 @@
 # is finalized.
 
 if test -f "go.mod"; then
-    GO111MODULE=on go mod vendor
+    export GOFLAGS='-mod=vendor'
+    export GO111MODULE=on
+    go mod vendor
 else
     dep ensure -v
 fi
