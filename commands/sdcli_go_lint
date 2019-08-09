@@ -3,7 +3,8 @@
 # Run the static analysis suite for go projects.
 
 if test -f "go.mod"; then
-    GO111MODULE=on golangci-lint run --config .golangci.yaml ./... -v
-else
-    golangci-lint run --config .golangci.yaml ./... -v
+    export GOFLAGS='-mod=vendor'
+    export GO111MODULE=on
 fi
+
+golangci-lint run --config .golangci.yaml ./... -v
