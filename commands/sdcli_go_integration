@@ -32,7 +32,7 @@ if [[ -f "${PWD}/main.go" ]]; then
     PKGS="$(go list ./... | sed 1d | paste -sd "," -)"
 fi
 
-go test -v -tags=integration -cover -coverpkg="${PKGS}" -coverprofile=.coverage/integration.cover.out ./tests
+go test -v -tags=integration -cover -coverpkg="${PKGS}" -coverprofile=.coverage/integration.cover.out -race ./tests
 
 _EXIT_CODE=$?
 gocov convert .coverage/integration.cover.out | gocov-xml > .coverage/integration.xml
