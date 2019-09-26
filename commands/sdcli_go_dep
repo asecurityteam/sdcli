@@ -6,6 +6,7 @@
 
 if test -f "go.mod"; then
     export GOFLAGS='-mod=vendor'
+    export GOPROXY=https://proxy.golang.org
     export GO111MODULE=on
     go mod vendor
 else
