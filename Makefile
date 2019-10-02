@@ -25,13 +25,7 @@ coverage: ;
 doc: ;
 
 build:
-	docker build -t $(ARTIFACT):$(VERSION) .
+	docker build -t $(ARTIFACT) .
 
 run:
-	docker run -ti $(ARTIFACT):$(VERSION)
-
-deploy: build
-	docker login -u=$(REGISTRY_USER) -p=$(REGISTRY_PWD) $(REGISTRY)
-	docker push $(ARTIFACT):$(VERSION)
-	docker tag $(ARTIFACT):$(VERSION) $(ARTIFACT):latest
-	docker push $(ARTIFACT):latest
+	docker run -ti $(ARTIFACT)
