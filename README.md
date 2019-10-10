@@ -1,5 +1,6 @@
 <a id="markdown-sdcli---security-development-repository-tools" name="sdcli---security-development-repository-tools"></a>
 # SDCLI - Security Development Repository Tools
+[![Build Status](https://travis-ci.com/asecurityteam/sdcli.png?branch=master)](https://travis-ci.com/asecurityteam/sdcli)
 
 *Status: Incubation*
 
