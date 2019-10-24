@@ -20,6 +20,7 @@ INTTESTS=$(go test -tags=integration -list . ./tests)
 FAIL="$(echo "${INTTESTS}" | grep 'FAIL')"
 if [[ ${FAIL} != "" ]]; then
     echo "A setup or compilation failure occurred."
+    echo "${INTTESTS}"
     exit 1
 fi
 FOUND="$(echo "${INTTESTS}" | grep 'ok')"
