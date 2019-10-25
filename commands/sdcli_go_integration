@@ -16,10 +16,16 @@ fi
 
 mkdir -p .coverage
 
-INTTESTS=$(go test -tags=integration -list . ./tests)
+PKGS="$(go list ./... | paste -sd "," -)"
+if [[ -f "${PWD}/main.go" ]]; then
+    PKGS="$(go list ./... | sed 1d | paste -sd "," -)"
+fi
+
+exec 5>&1
+INTTESTS=$(go test -v -tags=integration -cover -coverpkg="${PKGS}" -coverprofile=.coverage/integration.cover.out -race ./tests | tee >(cat - >&5))
 FAIL="$(echo "${INTTESTS}" | grep 'FAIL')"
 if [[ ${FAIL} != "" ]]; then
-    echo "A setup or compilation failure occurred."
+    echo "A setup or compilation failure occurred:"
     echo "${INTTESTS}"
     exit 1
 fi
@@ -28,13 +34,6 @@ if [[ ${FOUND} == "" ]]; then
     echo "No integration tests found."
     exit 0
 fi
-
-PKGS="$(go list ./... | paste -sd "," -)"
-if [[ -f "${PWD}/main.go" ]]; then
-    PKGS="$(go list ./... | sed 1d | paste -sd "," -)"
-fi
-
-go test -v -tags=integration -cover -coverpkg="${PKGS}" -coverprofile=.coverage/integration.cover.out -race ./tests
 
 _EXIT_CODE=$?
 gocov convert .coverage/integration.cover.out | gocov-xml > .coverage/integration.xml
