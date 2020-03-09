@@ -46,7 +46,7 @@ RUN curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.s
 FROM GO_DEPS AS JS_DEPS
 
 # Install NPM
-RUN curl -sfL https://deb.nodesource.com/setup_11.x | bash - && \
+RUN curl -sfL https://deb.nodesource.com/setup_12.x | bash - && \
     apt-get install -y nodejs
 
 #########################################
