@@ -20,7 +20,7 @@ dep version
 printf "%s\nPython-related versions\n%s" "${CYAN}" "${NORMAL}"
 
 python --version
-pylint --version
+flake8 --version
 pytest --version
 pipenv --version
 coverage --version

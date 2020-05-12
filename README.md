@@ -45,7 +45,7 @@ sdcli
       build # begins the interactive build process
   python
       dep # install python project dependencies
-      lint # run pylint against the project
+      lint # run flake8 against the project
       test # run unit tests
       coverage # generate a coverage report
   yaml
