@@ -27,7 +27,7 @@ INTTESTS=$(go test -v -tags=integration -cover -coverpkg="${PKGS}" -coverprofile
 FAIL="$(echo "${INTTESTS}" | grep 'FAIL')"
 if [[ ${FAIL} != "" ]]; then
     echo "A setup or compilation failure occurred."
-    exit 1
+    _EXIT_CODE=1
 fi
 FOUND="$(echo "${INTTESTS}" | grep 'ok')"
 if [[ ${FOUND} == "" ]]; then
