@@ -20,7 +20,7 @@
 
 This project is a docker image that we use as a CLI for repository management.
 It bundles our tools related to creating a new project, running any tests or
-CI automation, and keep our repositories consistent in how they build.
+CI automation, and keep our repositories consistent in how they build. We have two versions of this now.
 
 The current feature set is:
 
