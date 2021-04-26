@@ -32,11 +32,11 @@ RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
 # Install gocov tools
 RUN go get github.com/axw/gocov/... && \
-    go install github.com/axw/gocov/gocov && \
+    go install github.com/axw/gocov/gocov@latest && \
     go get github.com/AlekSi/gocov-xml && \
-    go install github.com/AlekSi/gocov-xml && \
+    go install github.com/AlekSi/gocov-xml@latest && \
     go get github.com/wadey/gocovmerge && \
-    go install github.com/wadey/gocovmerge
+    go install github.com/wadey/gocovmerge@latest
 
 # Install lint
 RUN curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | bash -s -- -b ${GOPATH}/bin ${GOLANGCI_VERSION}
