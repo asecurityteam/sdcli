@@ -1,9 +1,9 @@
-FROM golang:1.15.6 AS BASE
+FROM golang:1.16.3-buster AS BASE
 
 ENV APT_MAKE_VERSION=4.2.1-1.2 \
     APT_GCC_VERSION=4:8.3.0-1 \
     APT_GIT_VERSION=1:2.20.1-2+deb10u3 \
-    GOLANGCI_VERSION=v1.33.0 \
+    GOLANGCI_VERSION=v1.39.0 \
     LANG=C.UTF-8
 
 #########################################
@@ -32,11 +32,11 @@ RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
 # Install gocov tools
 RUN go get github.com/axw/gocov/... && \
-    go install github.com/axw/gocov/gocov && \
+    go install github.com/axw/gocov/gocov@latest && \
     go get github.com/AlekSi/gocov-xml && \
-    go install github.com/AlekSi/gocov-xml && \
+    go install github.com/AlekSi/gocov-xml@latest && \
     go get github.com/wadey/gocovmerge && \
-    go install github.com/wadey/gocovmerge
+    go install github.com/wadey/gocovmerge@latest
 
 # Install lint
 RUN curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | bash -s -- -b ${GOPATH}/bin ${GOLANGCI_VERSION}
