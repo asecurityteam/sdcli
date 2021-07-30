@@ -2,8 +2,6 @@ language: "go"
 sudo: false
 go:
   - 1.16.x
-  - 1.12.x
-  - 1.11.x
 services:
   - docker
 env:
