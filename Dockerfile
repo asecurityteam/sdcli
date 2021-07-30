@@ -1,4 +1,4 @@
-FROM golang:1.13.8 AS BASE
+FROM golang:1.13.8 AS base
 
 ENV APT_MAKE_VERSION=4.2.1-1.2 \
     APT_GCC_VERSION=4:8.3.0-1 \
@@ -8,7 +8,7 @@ ENV APT_MAKE_VERSION=4.2.1-1.2 \
 
 #########################################
 
-FROM BASE AS SYSTEM_DEPS
+FROM base AS system_deps
 
 # Install apt dependencies
 RUN apt-get update && \
@@ -25,7 +25,7 @@ RUN apt-get update && \
 
 #########################################
 
-FROM SYSTEM_DEPS AS GO_DEPS
+FROM system_deps AS go_deps
 
 # Install dep
 RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
@@ -43,7 +43,7 @@ RUN curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.s
 
 #########################################
 
-FROM GO_DEPS AS JS_DEPS
+FROM go_deps AS js_deps
 
 # Install NPM
 RUN curl -sfL https://deb.nodesource.com/setup_12.x | bash - && \
@@ -51,7 +51,7 @@ RUN curl -sfL https://deb.nodesource.com/setup_12.x | bash - && \
 
 #########################################
 
-FROM JS_DEPS AS PYTHON_DEPS
+FROM js_deps AS python_deps
 
 RUN apt-get install -y locales python3-distutils
 RUN curl https://bootstrap.pypa.io/get-pip.py | python3
@@ -71,7 +71,7 @@ RUN pip3 install yamllint
 
 #########################################
 
-FROM PYTHON_DEPS AS SSH_DEPS
+FROM python_deps AS ssh_deps
 
 # Install the bitbucket SSH host
 RUN mkdir -p /home/sdcli/.ssh
@@ -79,7 +79,7 @@ RUN echo 'bitbucket.org ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFP
 
 #########################################
 
-FROM SSH_DEPS AS USER_DEPS
+FROM ssh_deps AS user_deps
 
 # Create a non-root user to avoid permissions issues when
 # modifying files on the mounted host directories.
@@ -92,8 +92,20 @@ RUN groupadd -r sdcli -g 1000 \
 
 #########################################
 
-FROM USER_DEPS
+FROM user_deps AS docker_cli_deps
+# https://docs.docker.com/engine/install/debian/
+ENV DOCKER_PACKAGE_VERSION=5:20.10.7~3-0~debian-buster
+ENV PIP_PACKAGE_VERSION=1.29.2
+# comes from curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o - > docker-archive-keyring.gpg
+ADD docker-archive-keyring.gpg /usr/share/keyrings/
+ADD docker-apt.list /etc/apt/sources.list.d/docker.list
+# we need cli only, not deamon
+RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION} && rm -rf /var/lib/apt/lists/*
+RUN pip install docker-compose==${PIP_PACKAGE_VERSION}
 
+#########################################
+
+FROM docker_cli_deps
 USER sdcli
 
 RUN mkdir -p /home/sdcli/oss-templates/
