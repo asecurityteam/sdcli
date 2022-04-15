@@ -25,7 +25,7 @@ coverage: ;
 doc: ;
 
 build:
-	docker buildx create --use && docker buildx build --platform linux/amd64,linux/arm64 -t $(ARTIFACT) .
+	docker buildx build --platform linux/arm64 -t $(ARTIFACT) .
 
 run:
 	docker run -ti $(ARTIFACT)
