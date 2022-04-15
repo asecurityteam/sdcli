@@ -10,6 +10,7 @@ env:
 install:
   - make dep
 script:
+  - make build
   - make lint
   - make test
   - make integration
