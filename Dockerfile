@@ -1,4 +1,4 @@
-FROM golang:1.17.2-buster AS BASE
+FROM golang:1.17.7-buster AS BASE
 
 ENV APT_MAKE_VERSION=4.2.1-1.2 \
     APT_GCC_VERSION=4:8.3.0-1 \
