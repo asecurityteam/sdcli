@@ -1,4 +1,4 @@
-FROM golang:1.17.2-buster AS BASE
+FROM golang:1.17.7-buster AS BASE
 
 ENV APT_MAKE_VERSION=4.2.1-1.2 \
     APT_GCC_VERSION=4:8.3.0-1 \
@@ -66,7 +66,7 @@ RUN pip3 install pytest-cov
 RUN pip3 install pipenv
 RUN pip3 install oyaml
 RUN pip3 install python-slugify
-RUN pip3 install --upgrade git+git://github.com/asecurityteam/ccextender
+RUN pip3 install --upgrade git+https://github.com/asecurityteam/ccextender
 RUN pip3 install yamllint
 
 #########################################
