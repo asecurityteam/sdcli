@@ -39,7 +39,7 @@ RUN go get github.com/axw/gocov/... && \
     go install github.com/wadey/gocovmerge@latest
 
 # Install lint
-RUN curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | bash -s -- -b ${GOPATH}/bin ${GOLANGCI_VERSION}
+RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ${GOPATH}/bin ${GOLANGCI_VERSION}
 
 #########################################
 
