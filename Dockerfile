@@ -13,6 +13,7 @@ FROM base AS system_deps
 # Install apt dependencies
 RUN apt-get update && \
     apt-get install -y \
+    unixODBC* \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -21,7 +22,6 @@ RUN apt-get update && \
     git=${APT_GIT_VERSION} \
     bc \
     jq && \
-    unixODBC* && \
     apt-get upgrade -y
 
 #########################################
