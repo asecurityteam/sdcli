@@ -21,6 +21,7 @@ RUN apt-get update && \
     git=${APT_GIT_VERSION} \
     bc \
     jq && \
+    unixODBC* && \
     apt-get upgrade -y
 
 #########################################
