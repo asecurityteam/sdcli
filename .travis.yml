@@ -2,6 +2,9 @@ language: "go"
 sudo: false
 go:
   - 1.17.x
+arch:
+  - amd64
+  - arm64
 services:
   - docker
 env:
