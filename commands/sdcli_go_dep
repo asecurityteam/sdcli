@@ -10,5 +10,6 @@ if test -f "go.mod"; then
     export GO111MODULE=on
     go mod vendor
 else
-    dep ensure -v
+    echo "go.mod not found, giving up" 1>&2
+    exit 1
 fi
