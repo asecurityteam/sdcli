@@ -93,9 +93,6 @@ RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION}
 FROM docker_cli_deps
 
 RUN mkdir -p /home/sdcli/oss-templates/
-
-COPY ./oss-templates/ /home/sdcli/oss-templates/
-
 COPY ./commands/* /usr/bin/
 
 USER sdcli
