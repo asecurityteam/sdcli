@@ -27,9 +27,6 @@ RUN apt-get update && \
 
 FROM system_deps AS go_deps
 
-# Install dep
-RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-
 # Install gocov tools
 RUN go get github.com/axw/gocov/... && \
     go install github.com/axw/gocov/gocov@latest && \
@@ -53,21 +50,10 @@ RUN curl -sfL https://deb.nodesource.com/setup_12.x | bash - && \
 
 FROM js_deps AS python_deps
 
-RUN apt-get install -y locales python3-distutils
-RUN curl https://bootstrap.pypa.io/get-pip.py | python3
-RUN pip3 install -U setuptools cookiecutter
 RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
     && locale-gen
-RUN pip3 install -U flake8
-
-RUN pip3 install coverage
-RUN pip3 install pytest
-RUN pip3 install pytest-cov
-RUN pip3 install pipenv
-RUN pip3 install oyaml
-RUN pip3 install python-slugify
-RUN pip3 install --upgrade git+https://github.com/asecurityteam/ccextender
-RUN pip3 install yamllint
+RUN apt-get install -y locales python3-distutils python3-pip
+RUN pip3 install -U setuptools cookiecutter flake8 coverage pytest pytest-cov pipenv oyaml python-slugify yamllint
 
 #########################################
 
