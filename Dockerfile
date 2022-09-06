@@ -27,9 +27,6 @@ RUN apt-get update && \
 
 FROM system_deps AS go_deps
 
-# Install dep
-RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-
 # Install gocov tools
 RUN go get github.com/axw/gocov/... && \
     go install github.com/axw/gocov/gocov@latest && \
@@ -53,21 +50,10 @@ RUN curl -sfL https://deb.nodesource.com/setup_12.x | bash - && \
 
 FROM js_deps AS python_deps
 
-RUN apt-get install -y locales python3-distutils
-RUN curl https://bootstrap.pypa.io/get-pip.py | python3
-RUN pip3 install -U setuptools cookiecutter
+RUN apt-get install -y locales python3-distutils python3-pip
 RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
     && locale-gen
-RUN pip3 install -U flake8
-
-RUN pip3 install coverage
-RUN pip3 install pytest
-RUN pip3 install pytest-cov
-RUN pip3 install pipenv
-RUN pip3 install oyaml
-RUN pip3 install python-slugify
-RUN pip3 install --upgrade git+https://github.com/asecurityteam/ccextender
-RUN pip3 install yamllint
+RUN pip3 install -U setuptools cookiecutter flake8 coverage pytest pytest-cov pipenv oyaml python-slugify yamllint
 
 #########################################
 
@@ -95,23 +81,19 @@ RUN groupadd -r sdcli -g 1000 \
 FROM user_deps AS docker_cli_deps
 # https://docs.docker.com/engine/install/debian/
 ENV DOCKER_PACKAGE_VERSION=5:20.10.7~3-0~debian-buster
-ENV COMPOSE_PACKAGE_VERSION=1.29.2
+ENV COMPOSE_PACKAGE_VERSION=1.21.0-3
 # comes from curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o - > docker-archive-keyring.gpg
 ADD docker-archive-keyring.gpg /usr/share/keyrings/
 ADD docker-apt.list /etc/apt/sources.list.d/docker.list
 # we need cli only, not deamon
-RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION} && rm -rf /var/lib/apt/lists/*
-RUN pip install docker-compose==${COMPOSE_PACKAGE_VERSION}
+RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION} docker-compose=${COMPOSE_PACKAGE_VERSION} && rm -rf /var/lib/apt/lists/*
 
 #########################################
 
 FROM docker_cli_deps
-USER sdcli
 
 RUN mkdir -p /home/sdcli/oss-templates/
-
-COPY ./oss-templates/ /home/sdcli/oss-templates/
-
 COPY ./commands/* /usr/bin/
 
+USER sdcli
 ENTRYPOINT [ "sdcli" ]
