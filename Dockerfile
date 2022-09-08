@@ -28,7 +28,7 @@ FROM system_deps AS go_deps
 # https://marcofranssen.nl/manage-go-tools-via-go-modules
 ADD golang/* /go-tools/
 WORKDIR /go-tools
-RUN go mod download && grep _ tools.go | awk -F'"' '{print $2}' | xargs -tI % go install % && rm /go-tools/* && rmdir /go-tools
+RUN go mod download && grep _ tools.go | awk -F'"' '{print $2}' | xargs -tI % go install % && cd .. && rm /go-tools/* && rmdir /go-tools
 WORKDIR /
 
 #########################################
