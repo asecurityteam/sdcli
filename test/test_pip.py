@@ -11,7 +11,6 @@ def test_python_broken_deps(host):
 
 @pytest.mark.parametrize("name", [
     "setuptools",
-    "cookiecutter",
     "flake8",
     "coverage",
     "pytest",

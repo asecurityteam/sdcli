@@ -26,17 +26,11 @@ RUN apt-get update && \
 #########################################
 
 FROM system_deps AS go_deps
-
-# Install gocov tools
-RUN go get github.com/axw/gocov/... && \
-    go install github.com/axw/gocov/gocov@latest && \
-    go get github.com/AlekSi/gocov-xml && \
-    go install github.com/AlekSi/gocov-xml@latest && \
-    go get github.com/wadey/gocovmerge && \
-    go install github.com/wadey/gocovmerge@latest
-
-# Install lint
-RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ${GOPATH}/bin ${GOLANGCI_VERSION}
+# https://marcofranssen.nl/manage-go-tools-via-go-modules
+ADD golang/* /go-tools/
+WORKDIR /go-tools
+RUN go mod download && grep _ tools.go | awk -F'"' '{print $2}' | xargs -tI % go install % && rm /go-tools/* && rmdir /go-tools
+WORKDIR /
 
 #########################################
 
@@ -50,10 +44,17 @@ RUN curl -sfL https://deb.nodesource.com/setup_12.x | bash - && \
 
 FROM js_deps AS python_deps
 
+ENV PIPENV_VENV_IN_PROJECT 1
+
 RUN apt-get install -y locales python3-distutils python3-pip
 RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
     && locale-gen
-RUN pip3 install -U setuptools cookiecutter flake8 coverage pytest pytest-cov pipenv oyaml python-slugify yamllint
+RUN python3 -mpip install -U pipenv==2022.9.4
+ADD python/* /python/
+WORKDIR /python/
+# this allows to use advanced features of pipenv while still using pip to install actual requirements globally
+RUN pipenv requirements > requirements.txt && python3 -m pip install -U -r requirements.txt && rm /python/* && rmdir /python
+WORKDIR /
 
 #########################################
 
