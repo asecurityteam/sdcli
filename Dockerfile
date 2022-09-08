@@ -1,9 +1,8 @@
-FROM golang:1.17.7-buster AS BASE
+FROM golang:1.17.7-bullseye AS BASE
 
-ENV APT_MAKE_VERSION=4.2.1-1.2 \
-    APT_GCC_VERSION=4:8.3.0-1 \
-    APT_GIT_VERSION=1:2.20.1-2+deb10u3 \
-    GOLANGCI_VERSION=v1.39.0 \
+ENV APT_MAKE_VERSION=4.3-4.1 \
+    APT_GCC_VERSION=4:10.2.1-1 \
+    APT_GIT_VERSION=1:2.30.2-1 \
     LANG=C.UTF-8
 
 #########################################
@@ -81,8 +80,8 @@ RUN groupadd -r sdcli -g 1000 \
 
 FROM user_deps AS docker_cli_deps
 # https://docs.docker.com/engine/install/debian/
-ENV DOCKER_PACKAGE_VERSION=5:20.10.7~3-0~debian-buster
-ENV COMPOSE_PACKAGE_VERSION=1.21.0-3
+ENV DOCKER_PACKAGE_VERSION=5:20.10.6~3-0~debian-bullseye
+ENV COMPOSE_PACKAGE_VERSION=1.25.0-1
 # comes from curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o - > docker-archive-keyring.gpg
 ADD docker-archive-keyring.gpg /usr/share/keyrings/
 ADD docker-apt.list /etc/apt/sources.list.d/docker.list
