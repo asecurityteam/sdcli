@@ -3,7 +3,6 @@ FROM golang:1.17.7-buster AS BASE
 ENV APT_MAKE_VERSION=4.2.1-1.2 \
     APT_GCC_VERSION=4:8.3.0-1 \
     APT_GIT_VERSION=1:2.20.1-2+deb10u3 \
-    GOLANGCI_VERSION=v1.39.0 \
     LANG=C.UTF-8
 
 #########################################
@@ -29,7 +28,7 @@ FROM system_deps AS go_deps
 # https://marcofranssen.nl/manage-go-tools-via-go-modules
 ADD golang/* /go-tools/
 WORKDIR /go-tools
-RUN go mod download && grep _ tools.go | awk -F'"' '{print $2}' | xargs -tI % go install % && rm /go-tools/* && rmdir /go-tools
+RUN go mod download && grep _ tools.go | awk -F'"' '{print $2}' | xargs -tI % go install % && cd .. && rm /go-tools/* && rmdir /go-tools
 WORKDIR /
 
 #########################################
