@@ -10,7 +10,7 @@ services:
 env:
   global:
     - TMPDIR=/tmp
-    - DOCKER_TAGS=$( if [ ! -z "${TRAVIS_TAG}" ]; then echo ${TRAVIS_TAG}; echo $(echo ${TRAVIS_TAG} | sed -r 's/^v([0-9]+)\..*$/v\1/'); elif [ "master" == "${TRAVIS_BRANCH}" ] echo ${LATEST}; endif )
+    - DOCKER_TAGS=$( if [ ! -z "${TRAVIS_TAG}" ]; then echo ${TRAVIS_TAG}; echo $(echo ${TRAVIS_TAG} | sed -r 's/^v([0-9]+)\..*$/v\1/'); elif [ "master" == "${TRAVIS_BRANCH}" ] echo latest; endif )
 install:
   - make dep
 script:
