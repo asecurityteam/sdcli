@@ -1,9 +1,8 @@
-FROM golang:1.17.2-buster AS BASE
+FROM golang:1.19.1-bullseye AS BASE
 
-ENV APT_MAKE_VERSION=4.2.1-1.2 \
-    APT_GCC_VERSION=4:8.3.0-1 \
-    APT_GIT_VERSION=1:2.20.1-2+deb10u3 \
-    GOLANGCI_VERSION=v1.39.0 \
+ENV APT_MAKE_VERSION=4.3-4.1 \
+    APT_GCC_VERSION=4:10.2.1-1 \
+    APT_GIT_VERSION=1:2.30.2-1 \
     LANG=C.UTF-8
 
 #########################################
@@ -11,8 +10,8 @@ ENV APT_MAKE_VERSION=4.2.1-1.2 \
 FROM base AS system_deps
 
 # Install apt dependencies
-RUN apt-get -yqq update && \
-    apt-get -yqqq install \
+RUN apt-get update && \
+    apt-get install -y \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -20,47 +19,43 @@ RUN apt-get -yqq update && \
     gcc=${APT_GCC_VERSION} \
     git=${APT_GIT_VERSION} \
     bc \
-    jq \ 
-    locales \
-    python3-distutils \
-    docker.io \
-    && apt-get -yqqq upgrade \
-    && rm -rf /var/lib/apt/lists/*
+    jq && \
+    apt-get upgrade -y
 
 #########################################
 
 FROM system_deps AS go_deps
-
-# Install dep - we should no longer use it
-# RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-
-# Install gocov tools
-RUN go get github.com/axw/gocov/... && \
-    go install github.com/axw/gocov/gocov@latest && \
-    go get github.com/AlekSi/gocov-xml && \
-    go install github.com/AlekSi/gocov-xml@latest && \
-    go get github.com/wadey/gocovmerge && \
-    go install github.com/wadey/gocovmerge@latest
-
-# Install lint
-RUN curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | bash -s -- -b ${GOPATH}/bin ${GOLANGCI_VERSION}
+# https://marcofranssen.nl/manage-go-tools-via-go-modules
+ADD golang/* /go-tools/
+WORKDIR /go-tools
+RUN go mod download && grep _ tools.go | awk -F'"' '{print $2}' | xargs -tI % go install % && cd .. && rm /go-tools/* && rmdir /go-tools
+WORKDIR /
 
 #########################################
 
 FROM go_deps AS js_deps
 
 # Install NPM
-RUN curl -sfL https://deb.nodesource.com/setup_12.x | bash - && \
-    apt-get install -y nodejs
+ADD nodesource.gpg /usr/share/keyrings/
+ADD nodesource-apt.list /etc/apt/sources.list.d/nodesource.list
+RUN apt-get -y update && apt-get install -y nodejs
+
 
 #########################################
 
 FROM js_deps AS python_deps
 
-RUN curl https://bootstrap.pypa.io/get-pip.py | python3
+ENV PIPENV_VENV_IN_PROJECT 1
+
+RUN apt-get install -y locales python3-distutils python3-pip
 RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
     && locale-gen
-RUN pip3 install -U setuptools cookiecutter flake8 coverage pytest pytest-cov pipenv oyaml python-slugify git+https://github.com/asecurityteam/ccextender yamllint
+RUN python3 -mpip install -U pipenv==2022.9.4
+ADD python/* /python/
+WORKDIR /python/
+# this allows to use advanced features of pipenv while still using pip to install actual requirements globally
+RUN pipenv requirements > requirements.txt && python3 -m pip install -U -r requirements.txt && rm /python/* && rmdir /python
+WORKDIR /
 
 #########################################
 
@@ -87,24 +82,20 @@ RUN groupadd -r sdcli -g 1000 \
 
 FROM user_deps AS docker_cli_deps
 # https://docs.docker.com/engine/install/debian/
-# ENV DOCKER_PACKAGE_VERSION=5:20.10.7~3-0~debian-buster
-ENV COMPOSE_PACKAGE_VERSION=1.29.2
+ENV DOCKER_PACKAGE_VERSION=5:20.10.6~3-0~debian-bullseye
+ENV COMPOSE_PACKAGE_VERSION=1.25.0-1
 # comes from curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o - > docker-archive-keyring.gpg
-# ADD docker-archive-keyring.gpg /usr/share/keyrings/
-# ADD docker-apt.list /etc/apt/sources.list.d/docker.list
+ADD docker-archive-keyring.gpg /usr/share/keyrings/
+ADD docker-apt.list /etc/apt/sources.list.d/docker.list
 # we need cli only, not deamon
-# RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION} && rm -rf /var/lib/apt/lists/*
-RUN pip install docker-compose==${COMPOSE_PACKAGE_VERSION}
+RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION} docker-compose=${COMPOSE_PACKAGE_VERSION} && rm -rf /var/lib/apt/lists/*
 
 #########################################
 
 FROM docker_cli_deps
-USER sdcli
 
 RUN mkdir -p /home/sdcli/oss-templates/
-
-COPY ./oss-templates/ /home/sdcli/oss-templates/
-
 COPY ./commands/* /usr/bin/
 
+USER sdcli
 ENTRYPOINT [ "sdcli" ]

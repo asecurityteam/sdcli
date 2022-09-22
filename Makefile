@@ -16,7 +16,9 @@ lint:
 	docker run --rm -i -v "$(DIR):/mnt:ro" koalaman/shellcheck:v0.8.0 commands/*
 
 test:
-	./tests/run_tests.sh
+	docker build -t local/test/sdcli .
+	docker build -t local/test/sdclitests test
+	docker run -it local/test/sdclitests
 
 integration: ;
 

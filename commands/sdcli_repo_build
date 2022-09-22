@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-# CCExtender is an extended version of cookiecutter and is designed for customizable and
-# interactive repository creation. In this case, it reads from the ccextender.yaml file stored in
-# the top directory of the sdcli repo (which defines how new repositories will/can be built).
-
-ccextender -c /home/sdcli/ccextender.yaml
