@@ -18,7 +18,7 @@ lint:
 test:
 	docker build -t local/test/sdcli .
 	docker build -t local/test/sdclitests test
-	docker run -it local/test/sdclitests
+	docker run -i local/test/sdclitests
 
 integration: ;
 
@@ -30,4 +30,4 @@ build:
 	docker build -t $(ARTIFACT) .
 
 run:
-	docker run -ti $(ARTIFACT)
+	docker run -i $(ARTIFACT)
