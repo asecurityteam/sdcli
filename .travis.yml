@@ -10,6 +10,7 @@ services:
 env:
   global:
     - TMPDIR=/tmp
+    - DOCKER_TAGS=$( if [ ! -z "${TRAVIS_TAG}" ]; then echo ${TRAVIS_TAG}; echo $(echo ${TRAVIS_TAG} | sed -r 's/^v([0-9]+)\..*$/v\1/'); elif [ "master" == "${TRAVIS_BRANCH}" ] echo ${LATEST}; endif )
 install:
   - make dep
 script:
@@ -18,3 +19,12 @@ script:
   - make integration
   - make coverage
   - bash <(curl -s https://codecov.io/bash) -f .coverage/combined.cover.out
+after_success:
+  - test ! -z "${DOCKER_TAGS}" && echo "docker login here"
+  - test ! -z "${DOCKER_TAGS}" && for TAG in ${DOCKER_TAGS}; do docker tag sdcli asecurityteam/sdcli:${TRAVIS_CPU_ARCH}-${TAG} && docker push asecurityteam/sdcli:${TRAVIS_CPU_ARCH}-${TAG} ; done
+
+jobs:
+  include:
+   - stage: deploy
+     script:
+       - test ! -z "${DOCKER_TAGS}" && for TAG in ${DOCKER_TAGS}; do docker manifest create asecurityteam/sdcli:multiarch-${TAG} asecurityteam/sdcli:amd64-${TAG} asecurityteam/sdcli:arm64-${TAG} && docker manifest push asecurityteam/sdcli:multiarch-${TAG} ; done
