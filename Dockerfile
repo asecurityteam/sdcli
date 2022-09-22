@@ -1,4 +1,4 @@
-FROM golang:1.17.7-bullseye AS BASE
+FROM golang:1.19.1-bullseye AS BASE
 
 ENV APT_MAKE_VERSION=4.3-4.1 \
     APT_GCC_VERSION=4:10.2.1-1 \
@@ -36,8 +36,10 @@ WORKDIR /
 FROM go_deps AS js_deps
 
 # Install NPM
-RUN curl -sfL https://deb.nodesource.com/setup_12.x | bash - && \
-    apt-get install -y nodejs
+ADD nodesource.gpg /usr/share/keyrings/
+ADD nodesource-apt.list /etc/apt/sources.list.d/nodesource.list
+RUN apt-get -y update && apt-get install -y nodejs
+
 
 #########################################
 
