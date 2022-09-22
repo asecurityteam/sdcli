@@ -36,8 +36,10 @@ WORKDIR /
 FROM go_deps AS js_deps
 
 # Install NPM
-RUN curl -sfL https://deb.nodesource.com/setup_12.x | bash - && \
-    apt-get install -y nodejs
+ADD nodesource.gpg /usr/share/keyrings/
+ADD nodesource-apt.list /etc/apt/sources.list.d/nodesource.list
+RUN apt-get -y update && apt-get install -y nodejs
+
 
 #########################################
 
