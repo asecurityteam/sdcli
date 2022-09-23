@@ -21,7 +21,7 @@ script:
   - make test
   - make integration
 after_success:
-  - test ! -z "${DOCKER_TAGS}" && ( echo "${DOCKER_PASSWORD}" | docker login --username=${DOCKER_USERNAME} --password-stdin )
+  - test ! -z "${DOCKER_TAGS}" && ( echo "${DOCKER_PASSWORD}" | docker login --username=ensary --password-stdin )
   - test ! -z "${DOCKER_TAGS}" && for TAG in ${DOCKER_TAGS}; do docker tag sdcli asecurityteam/sdcli:${TRAVIS_CPU_ARCH}-${TAG} && docker push asecurityteam/sdcli:${TRAVIS_CPU_ARCH}-${TAG} ; done
 jobs:
   include:
