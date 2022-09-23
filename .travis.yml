@@ -11,7 +11,7 @@ env:
   global:
     - TMPDIR=/tmp
     - DOCKER_TAGS=$( if [ ! -z "${TRAVIS_TAG}" ] ; then echo ${TRAVIS_TAG}; echo $(echo
-      ${TRAVIS_TAG} | sed -r 's/^v([0-9]+)[.].*$/v\1/'); elif [ "master" == "${TRAVIS_BRANCH}"
+      ${TRAVIS_TAG} | sed -r 's/^v([0-9]+)[.].*$/v\\1/'); elif [ "master" == "${TRAVIS_BRANCH}"
       ] ; then echo latest; endif )
     # https://docs.travis-ci.com/user/docker/#pushing-a-docker-image-to-a-registry
     - secure: U7gHOMUfPXrKbEuKVKw+lpVcbqCK18AbkIt1bZVk2g3yyJrIXkWUP0127H/nhJCRqHVwY1DGXY+otDncWzZZ/6ULP0iCUs092skWSXQY3AMFohin+S0oXfC9nN2S7+npO+CMflAClA/4jRLBMgBC47haOn9Ma/pKfjNMuR/S6relBmdqG3YjQn5zBjI4FkjRwb8bME8HTCBCCYeXusfE819efXfICeKKGxVA7qS52U7r2W5A6pimuSxLV5wvcsTTX7jib6POMVVYoRVaaDQxolZOjB+Oyh1255xINi2JyKeL8Jg7Ps+DJwZsWVDnanGMoIX7oObrTwcylqA49IOtJWS1iypkDe3tPZxvkcjQP5Qd+UtMLsonPb0NtPyzYLz75LG0HIIe3JNuTDEmqcNV58e8dqDvIKvLK8NaYfcgNhCQ8zzRmR448oT39SaP7kThWwL74DMZeWWlLSlGJAwESXIHeq5kwi/1+2fUjsP2Nx6NRIn3xaRvA9b+68SDBsMEj+ELO1FVZc9BBzPGZsZ7z9DFX/qCN5MHorgPQC5rGGD0mR0jWCrhAGefDiaqKIqUhxpnGBjyJlpkeiBe/vngvmMEEASUSpdOrutC8oIHWYVMKKY7EuDaqqlFI5YI9IpCnHXhzUeMqLm+4tWcD+qf3in8qwonR9zcDj1Jv+/4je4=
