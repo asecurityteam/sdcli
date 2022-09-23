@@ -10,9 +10,9 @@ services:
 env:
   global:
     - TMPDIR=/tmp
-    - DOCKER_TAGS=$( if [ ! -z "${TRAVIS_TAG}" ]; then echo ${TRAVIS_TAG}; echo $(echo
+    - DOCKER_TAGS=$( if [ ! -z "${TRAVIS_TAG}" ] ; then echo ${TRAVIS_TAG}; echo $(echo
       ${TRAVIS_TAG} | sed -r 's/^v([0-9]+)\..*$/v\1/'); elif [ "master" == "${TRAVIS_BRANCH}"
-      ] echo latest; endif )
+      ] ; then echo latest; endif )
     # https://docs.travis-ci.com/user/docker/#pushing-a-docker-image-to-a-registry
     - secure: U7gHOMUfPXrKbEuKVKw+lpVcbqCK18AbkIt1bZVk2g3yyJrIXkWUP0127H/nhJCRqHVwY1DGXY+otDncWzZZ/6ULP0iCUs092skWSXQY3AMFohin+S0oXfC9nN2S7+npO+CMflAClA/4jRLBMgBC47haOn9Ma/pKfjNMuR/S6relBmdqG3YjQn5zBjI4FkjRwb8bME8HTCBCCYeXusfE819efXfICeKKGxVA7qS52U7r2W5A6pimuSxLV5wvcsTTX7jib6POMVVYoRVaaDQxolZOjB+Oyh1255xINi2JyKeL8Jg7Ps+DJwZsWVDnanGMoIX7oObrTwcylqA49IOtJWS1iypkDe3tPZxvkcjQP5Qd+UtMLsonPb0NtPyzYLz75LG0HIIe3JNuTDEmqcNV58e8dqDvIKvLK8NaYfcgNhCQ8zzRmR448oT39SaP7kThWwL74DMZeWWlLSlGJAwESXIHeq5kwi/1+2fUjsP2Nx6NRIn3xaRvA9b+68SDBsMEj+ELO1FVZc9BBzPGZsZ7z9DFX/qCN5MHorgPQC5rGGD0mR0jWCrhAGefDiaqKIqUhxpnGBjyJlpkeiBe/vngvmMEEASUSpdOrutC8oIHWYVMKKY7EuDaqqlFI5YI9IpCnHXhzUeMqLm+4tWcD+qf3in8qwonR9zcDj1Jv+/4je4=
     - secure: Rl8YnNGQB92PhqbmY7JrPCpMBofGk2LtFYpxJ7SKUzBrYdLu0g1sZ2aNB9Dn9le4T9p/arqXdzO8D6ZI8+Rot1YN4cygua+UG18PE6qx+RF9KAYhe5jLm8iVgFJrWg9SqyDTZo5CnWFG5Mn6WBuMmFIFGWeu8zlFkm/PzssMI8E3e36mlTtfUno8meq3jJjfg6LJJixO8nu2aTk8EB7LzUcOLHPubeUx82vk4JrLky3IhaEwM+XO/jo9h/eUZ+oQ3eUfQNlo4TUhu65M6uth0k8jL8IcV+Jg8a+pYBEKab6CEoX5Pen1rWfKJ67GNQy4vvPIhw6lXyezOWnDOPQpG4c626tdbUIuHUv+YpdbqYs8fGzzfuRFnFwyCXKSktJuu8VtUYmEKv/sqL2cRwK2vF5eLuZCY4VgnQLj/O3w1oGnye/781P+Rrn/Axna/NE4KXNjnJui7h9SFepXkEl6EBpxEmkNGb6qNYfJFTaGsZBYA0eElUykb7yfvtOt9psnvOGIJuo8VTuRuyXsMuIIAejiR1J/kpEtr2O0OTH9GNCPVf5Si5jDmdYc76v0REb3+fG8MxaRcLkZW1yvPKkbfsFnVsiVgC/V9BUqkFeHP96y0/eBOOXbQCaITWLENJSpze2U7fVUBVYtFFt6ZgiGuhxFzoQ9b6TLwhZhJ4Gki8U=
@@ -33,7 +33,7 @@ jobs:
   include:
     - stage: deploy
       script:
-        - test ! -z "${DOCKER_TAGS}" && for TAG in ${DOCKER_TAGS}; do docker manifest
+        - if [ ! -z "${DOCKER_TAGS}" ] ; then for TAG in ${DOCKER_TAGS}; do docker manifest
           create asecurityteam/sdcli:multiarch-${TAG} asecurityteam/sdcli:amd64-${TAG}
           asecurityteam/sdcli:arm64-${TAG} && docker manifest push asecurityteam/sdcli:multiarch-${TAG}
-          ; done
+          ; done ; fi
