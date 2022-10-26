@@ -32,7 +32,7 @@ fi
 
 # the exec below redirects '5' to stdout so we can simultaneously capture output and print it in the 'go integration' call
 exec 5>&1
-INTTESTS=$(go test -v -tags=integration -cover -coverpkg="${PKGS}" -coverprofile=.coverage/integration.cover.out -race ./tests -run "${TESTS}" -timeout 15m | tee >(cat - >&5))
+INTTESTS=$(go test -v -tags=integration -cover -coverpkg="${PKGS}" -coverprofile=.coverage/integration.cover.out -race ./tests/... -run "${TESTS}" -timeout 15m | tee >(cat - >&5))
 FAIL="$(echo "${INTTESTS}" | grep 'FAIL')"
 if [[ ${FAIL} != "" ]]; then
     echo "A setup or compilation failure occurred."
