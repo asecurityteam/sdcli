@@ -89,6 +89,7 @@ ADD docker-archive-keyring.gpg /usr/share/keyrings/
 ADD docker-apt.list /etc/apt/sources.list.d/docker.list
 # we need cli only, not deamon
 RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION} docker-compose-plugin=${COMPOSE_PACKAGE_VERSION} && rm -rf /var/lib/apt/lists/*
+ADD docker-compose /usr/bin/
 
 #########################################
 
