@@ -6,7 +6,7 @@ import pytest
     ("gcc", "4:10.2.1-1"),
     ("git", "1:2.30.2-1"),
     ("docker-ce-cli", "5:20.10.6"),
-    ("docker-compose", "1.25"),
+    ("docker-compose-plugin", "2.11.2"),
 ])
 def test_packages(host, name, version):
     pkg = host.package(name)

@@ -83,13 +83,15 @@ RUN groupadd -r sdcli -g 1000 \
 FROM user_deps AS docker_cli_deps
 # https://docs.docker.com/engine/install/debian/
 ENV DOCKER_PACKAGE_VERSION=5:20.10.6~3-0~debian-bullseye
-ENV COMPOSE_PACKAGE_VERSION=2.11.2~debian-bullseye
+ENV COMPOSE_PLUGIN_PACKAGE_VERSION=2.11.2~debian-bullseye
+ENV COMPOSE_PACKAGE_VERSION=1.25.0-1
+>>>>>>> origin/master
 # comes from curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o - > docker-archive-keyring.gpg
 ADD docker-archive-keyring.gpg /usr/share/keyrings/
 ADD docker-apt.list /etc/apt/sources.list.d/docker.list
 # we need cli only, not deamon
-RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION} docker-compose-plugin=${COMPOSE_PACKAGE_VERSION} && rm -rf /var/lib/apt/lists/*
-ADD docker-compose /usr/bin/
+RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION} docker-compose-plugin=${COMPOSE_PLUGIN_PACKAGE_VERSION} docker-compose=${COMPOSE_PACKAGE_VERSION} \
+    && rm -rf /var/lib/apt/lists/*
 
 #########################################
 
