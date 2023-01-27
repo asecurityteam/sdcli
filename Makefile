@@ -27,7 +27,7 @@ coverage: ;
 doc: ;
 
 build:
-	docker build -t $(ARTIFACT) .
+	docker build -t $(ARTIFACT):$(VERSION) .
 
 run:
 	docker run -i $(ARTIFACT)

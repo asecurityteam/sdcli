@@ -27,6 +27,7 @@ RUN apt-get update && \
 FROM system_deps AS go_deps
 # https://marcofranssen.nl/manage-go-tools-via-go-modules
 ADD golang/* /go-tools/
+ADD defaults/.golangci.yaml /defaults/.golangci.yaml
 WORKDIR /go-tools
 RUN go mod download && grep _ tools.go | awk -F'"' '{print $2}' | xargs -tI % go install % && cd .. && rm /go-tools/* && rmdir /go-tools
 WORKDIR /
