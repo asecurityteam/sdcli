@@ -41,4 +41,7 @@ join_by() {
     local IFS="$1"; shift; echo "$*";
 }
 
+# show help if not sub-command was specified
+test -z "${COMMAND_PATH}" && COMMAND_PATH+=("help")
+
 sdcli_"$(join_by "_" "${COMMAND_PATH[@]}")" "${EXTRA_ARGS[@]}"
