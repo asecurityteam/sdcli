@@ -42,6 +42,6 @@ join_by() {
 }
 
 # show help if no sub-command was specified
-test -z "${COMMAND_PATH[@]}" && COMMAND_PATH+=("help")
+test "${#COMMAND_PATH[@]}" -eq 0 && COMMAND_PATH+=("help")
 
 sdcli_"$(join_by "_" "${COMMAND_PATH[@]}")" "${EXTRA_ARGS[@]}"
