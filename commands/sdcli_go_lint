@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+spec="/defaults/.golangci.yaml"
+
 # Run the static analysis suite for go projects.
 
 if test -f "go.mod"; then
@@ -8,4 +10,9 @@ if test -f "go.mod"; then
     export GO111MODULE=on
 fi
 
-golangci-lint run --config .golangci.yaml ./... -v
+# Use local golangci.yaml file if one is provided
+if test -f ".golangci.yaml"; then
+    spec=".golangci.yaml"
+fi
+
+golangci-lint run --config $spec ./... -v
