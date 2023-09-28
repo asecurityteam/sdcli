@@ -2,8 +2,7 @@ FROM golang:1.21.1-bullseye AS BASE
 
 ENV APT_MAKE_VERSION=4.3-4.1 \
     APT_GCC_VERSION=4:10.2.1-1 \
-    # TODO: figure out git version being used
-    # APT_GIT_VERSION=1:2.42.0-1 \
+    APT_GIT_VERSION=1:2.30.2-1+deb11u2 \
     LANG=C.UTF-8
 
 #########################################
@@ -18,9 +17,7 @@ RUN apt-get update && \
     curl \
     make=${APT_MAKE_VERSION} \
     gcc=${APT_GCC_VERSION} \
-    # TODO: figure out git version being used
-    # git=${APT_GIT_VERSION} \
-    git \
+    git=${APT_GIT_VERSION} \
     bc \
     jq && \
     apt-get upgrade -y
