@@ -1,6 +1,7 @@
 import pytest
 
-
+# TODO: create a new github tag for new image
+# TODO: fix unit test
 @pytest.mark.parametrize("name,version", [
     ("make", "4.3-4.1"),
     ("gcc", "4:10.2.1-1"),
