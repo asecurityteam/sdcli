@@ -9,7 +9,7 @@
 # that there are no tests and exists successfully.
 
 if test -f "go.mod"; then
-    export GOFLAGS='-mod=vendor'
+    export GOFLAGS="-mod=vendor -buildvcs=false ${GOFLAGS:+}"
     export GOPROXY=https://proxy.golang.org
     export GO111MODULE=on
 fi
