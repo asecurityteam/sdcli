@@ -19,7 +19,8 @@ RUN apt-get update && \
     gcc=${APT_GCC_VERSION} \
     git=${APT_GIT_VERSION} \
     bc \
-    jq && \
+    jq \
+    unzip && \
     apt-get upgrade -y
 
 #########################################
