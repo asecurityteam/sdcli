@@ -12,10 +12,10 @@ def test_npm_installed(host):
 def test_node_version(host):
     c = host.run('node -v')
     assert c.rc == 0
-    assert c.stdout.startswith('v16')
+    assert c.stdout.startswith('v20')
 
 
 def test_npm_version(host):
     c = host.run('npm -v')
     assert c.rc == 0
-    assert c.stdout.startswith('8.')
+    assert c.stdout.startswith('10.')
