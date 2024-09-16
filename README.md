@@ -1,6 +1,5 @@
 <a id="markdown-sdcli---security-development-repository-tools" name="sdcli---security-development-repository-tools"></a>
 # SDCLI - Security Development Repository Tools
-[![Build Status](https://travis-ci.com/asecurityteam/sdcli.png?branch=master)](https://travis-ci.com/asecurityteam/sdcli)
 
 *Status: Incubation*
 
@@ -40,7 +39,6 @@ sdcli
           add-docker # add a Dockerfile
           add-layout # render the standard layout
           add-lint # add linter configuration
-          add-travis # add a travisci configuraiton
           create # generate a full go project
       build # begins the interactive build process
   python
