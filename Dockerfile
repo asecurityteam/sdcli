@@ -2,7 +2,7 @@ FROM golang:1.23.0-bullseye AS BASE
 
 ENV APT_MAKE_VERSION=4.3-4.1 \
     APT_GCC_VERSION=4:10.2.1-1 \
-    APT_GIT_VERSION=1:2.30.2-1+deb11u2 \
+    APT_GIT_VERSION=1:2.30.2-1+deb11u3 \
     LANG=C.UTF-8
 
 #########################################
@@ -52,7 +52,7 @@ ENV PIPENV_VENV_IN_PROJECT 1
 RUN apt-get install -y locales python3-distutils python3-pip
 RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
     && locale-gen
-RUN python3 -mpip install -U pipenv==2022.9.4
+RUN python3 -mpip install -U pipenv==2024.1.0
 ADD python/* /python/
 WORKDIR /python/
 # this allows to use advanced features of pipenv while still using pip to install actual requirements globally
@@ -84,8 +84,8 @@ RUN groupadd -r sdcli -g 1000 \
 
 FROM user_deps AS docker_cli_deps
 # https://docs.docker.com/engine/install/debian/
-ENV DOCKER_PACKAGE_VERSION=5:20.10.6~3-0~debian-bullseye
-ENV COMPOSE_PLUGIN_PACKAGE_VERSION=2.11.2~debian-bullseye
+ENV DOCKER_PACKAGE_VERSION=5:27.3.1-1~debian.11~bullseye
+ENV COMPOSE_PLUGIN_PACKAGE_VERSION=2.29.7-1~debian.11~bullseye
 ENV COMPOSE_PACKAGE_VERSION=1.25.0-1
 # comes from curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o - > docker-archive-keyring.gpg
 ADD docker-archive-keyring.gpg /usr/share/keyrings/
