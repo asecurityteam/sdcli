@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-# Generate a combined coverage report that can be reported to codecov
-# and report combined coverage results to the terminal.
-
+# Generate a combined coverage
 if test -f "go.mod"; then
     export GOFLAGS="-mod=vendor -buildvcs=false ${GOFLAGS:+}"
     export GOPROXY=https://proxy.golang.org
