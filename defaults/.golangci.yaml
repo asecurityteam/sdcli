@@ -1,6 +1,7 @@
 # https://github.com/golangci/golangci/wiki/Configuration
 run:
-  deadline: 3m
+  deadline: 5m
+  timeout: 5m
   issues-exit-code: 1
   tests: true
   skip-dirs:
