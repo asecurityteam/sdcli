@@ -2,7 +2,7 @@ FROM golang:1.23.0-bullseye AS BASE
 
 ENV APT_MAKE_VERSION=4.3-4.1 \
     APT_GCC_VERSION=4:10.2.1-1 \
-    APT_GIT_VERSION=1:2.30.2-1+deb11u3 \
+    APT_GIT_VERSION=1:2.30.2-1+deb11u8 \
     LANG=C.UTF-8
 
 #########################################
