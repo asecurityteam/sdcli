@@ -9,7 +9,6 @@
     - [Overview](#overview)
     - [Usage](#usage)
         - [For Shells Other than `bash`](#for-shells-other-than-bash)
-    - [Generate A New Project From Templates](#generate-a-new-project-from-templates)
     - [Adding Commands](#adding-commands)
 
 <!-- /TOC -->
@@ -31,21 +30,6 @@ sdcli
       test # run unit tests
       integration # run integration tests
       coverage # generate a coverage report
-  repo
-      all # generic repo tools
-          add-oss # add license and contributing files
-          audit-contract # verify the repo implements the contract
-      go # go repo tools
-          add-docker # add a Dockerfile
-          add-layout # render the standard layout
-          add-lint # add linter configuration
-          create # generate a full go project
-      build # begins the interactive build process
-  python
-      dep # install python project dependencies
-      lint # run flake8 against the project
-      test # run unit tests
-      coverage # generate a coverage report
   yaml
       lint #runs yamllint against all yamls in current directory
   version # lists the versions of the installed languages and applications in SDCLI
@@ -57,7 +41,7 @@ sdcli
 The project is delivered as a docker image that contains our tooling:
 
 ```bash
-docker pull asecurityteam/sdcli:v1
+docker pull asecurityteam/sdcli:v3
 ```
 
 With the image installed you call it like (omit the first `--mount` if on Mac):
@@ -88,9 +72,7 @@ sdcli() {
     # Remove gopath from the front of the directory path. The resulting
     # path is used to construct a mount point inside the container. For
     # go projects this results in them being placed within the gopath
-    # of the container. Other languages, such as Python, will still get
-    # placed within the gopath but should be agnostic to this fact since
-    # they can be placed anywhere.
+    # of the container. 
     local project_path=${cwd#"${gopath}/src/"}
     docker run -ti --rm \
         --mount src="${SSH_AUTH_SOCK}",target="/ssh-agent",type="bind" \
@@ -120,13 +102,13 @@ docker run -ti \
     # Adjust the container workspace to the newly mounted project.
     -w "/go/src/${project_path}" \
     # Run a command.
-    asecurityteam/sdcli:v1 python lint
+    asecurityteam/sdcli:v1 go lint
 ```
 
 Or, if you've already added the sdcli bash function to your .bashrc file, you can simply type:
 
 ```bash
-sdcli python lint
+sdcli go lint
 ```
 
 <a id="markdown-for-shells-other-than-bash" name="for-shells-other-than-bash"></a>
@@ -175,28 +157,6 @@ docker run -it \
     -w "/go/src/$project_path" \
     asecurityteam/sdcli:v1
 ```
-
-<a id="markdown-generate-a-new-project-from-templates"
-name="generate-a-new-project-from-templates"></a>
-## Generate A New Project From Templates
-
-One of the primary use cases for our tool is creating and auditing new project
-repositories. All of our templates are written using the
-[cookiecutter](https://github.com/audreyr/cookiecutter) tool. We make fairly granular
-templates so generating a project means rendering more than one at a time. The
-default behavior is to render each of the templates and prompt through the terminal
-for input values. However, each template asks for roughly the same input values. To
-reduce the tedium, call the template functions like this:
-
-```bash
-sdcli repo go create -- \
-    project_name="Name Of Project" \
-    project_description="Long form description" \
-    --no-input
-```
-
-This passes along all the values needed for our templates to render and disables the
-prompts.
 
 <a id="markdown-adding-commands" name="adding-commands"></a>
 ## Adding Commands

@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-#Installs dependencies listed in target project's Pipfile
-
-pipenv install --system
