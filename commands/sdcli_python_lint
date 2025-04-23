@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-#Runs against all python source files stemming from current directory. Config file not required.
-find . -iname "*.py" -print0 | xargs  -0 flake8

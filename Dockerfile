@@ -1,9 +1,6 @@
-FROM golang:1.23.0-bullseye AS BASE
+FROM golang:1.23.0-bookworm AS base
 
-ENV APT_MAKE_VERSION=4.3-4.1 \
-    APT_GCC_VERSION=4:10.2.1-1 \
-    APT_GIT_VERSION=1:2.30.2-1+deb11u3 \
-    LANG=C.UTF-8
+ENV LANG=en_US.UTF-8
 
 #########################################
 
@@ -15,13 +12,18 @@ RUN apt-get update && \
     apt-transport-https \
     ca-certificates \
     curl \
-    make=${APT_MAKE_VERSION} \
-    gcc=${APT_GCC_VERSION} \
-    git=${APT_GIT_VERSION} \
+    make \
+    git \
     bc \
     jq \
+    yamllint \  
+    locales\  
     unzip && \
-    apt-get upgrade -y
+    apt-get upgrade -y && \
+    # Generate required locale
+    sed -i '/en_US.UTF-8/s/^# //' /etc/locale.gen && \
+    locale-gen && \
+    update-locale LANG=en_US.UTF-8
 
 #########################################
 
@@ -42,26 +44,9 @@ ADD nodesource.gpg /usr/share/keyrings/
 ADD nodesource-apt.list /etc/apt/sources.list.d/nodesource.list
 RUN apt-get -y update && apt-get install -y nodejs
 
-
 #########################################
 
-FROM js_deps AS python_deps
-
-ENV PIPENV_VENV_IN_PROJECT 1
-
-RUN apt-get install -y locales python3-distutils python3-pip
-RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
-    && locale-gen
-RUN python3 -mpip install -U pipenv==2024.1.0
-ADD python/* /python/
-WORKDIR /python/
-# this allows to use advanced features of pipenv while still using pip to install actual requirements globally
-RUN pipenv requirements > requirements.txt && python3 -m pip install -U -r requirements.txt && rm /python/* && rmdir /python
-WORKDIR /
-
-#########################################
-
-FROM python_deps AS ssh_deps
+FROM js_deps AS ssh_deps
 
 # Install the bitbucket SSH host
 RUN mkdir -p /home/sdcli/.ssh
@@ -84,21 +69,22 @@ RUN groupadd -r sdcli -g 1000 \
 
 FROM user_deps AS docker_cli_deps
 # https://docs.docker.com/engine/install/debian/
-ENV DOCKER_PACKAGE_VERSION=5:27.3.1-1~debian.11~bullseye
-ENV COMPOSE_PLUGIN_PACKAGE_VERSION=2.29.7-1~debian.11~bullseye
-ENV COMPOSE_PACKAGE_VERSION=1.25.0-1
+ENV DOCKER_PACKAGE_VERSION=5:27.5.1-1~debian.12~bookworm
+ENV COMPOSE_PLUGIN_PACKAGE_VERSION=2.33.1-1~debian.12~bookworm
+ENV COMPOSE_PACKAGE_VERSION=1.29.2-3
 # comes from curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o - > docker-archive-keyring.gpg
 ADD docker-archive-keyring.gpg /usr/share/keyrings/
 ADD docker-apt.list /etc/apt/sources.list.d/docker.list
 # we need cli only, not deamon
-RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION} docker-compose-plugin=${COMPOSE_PLUGIN_PACKAGE_VERSION} docker-compose=${COMPOSE_PACKAGE_VERSION} \
+RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION} \
+    docker-compose-plugin=${COMPOSE_PLUGIN_PACKAGE_VERSION} \
+    docker-compose=${COMPOSE_PACKAGE_VERSION} \
     && rm -rf /var/lib/apt/lists/*
 
 #########################################
 
 FROM docker_cli_deps
 
-RUN mkdir -p /home/sdcli/oss-templates/
 COPY ./commands/* /usr/bin/
 
 USER sdcli

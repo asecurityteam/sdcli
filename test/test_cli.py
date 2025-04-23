@@ -19,11 +19,6 @@ def test_go_dep(host):
     assert c.rc != 0
     assert 'go.mod not found' in c.stderr
 
-def test_python_dep(host):
-    c = host.run('/usr/bin/sdcli python dep')
-    assert c.rc != 0
-    assert 'Usage: pipenv' in c.stderr
-
 
 def test_yaml_lint(host):
     c = host.run('/usr/bin/sdcli yaml lint')
