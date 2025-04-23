@@ -1,8 +1,6 @@
-FROM golang:1.23.0-bullseye AS base
+FROM golang:1.23.0-bookworm AS base
 
-ENV APT_MAKE_VERSION=4.3-4.1 \
-    APT_GIT_VERSION=1:2.30.2-1+deb11u4 \
-    LANG=C.UTF-8
+ENV LANG=en_US.UTF-8
 
 #########################################
 
@@ -14,12 +12,18 @@ RUN apt-get update && \
     apt-transport-https \
     ca-certificates \
     curl \
-    make=${APT_MAKE_VERSION} \
-    git=${APT_GIT_VERSION} \
+    make \
+    git \
     bc \
     jq \
+    yamllint \  
+    locales\  
     unzip && \
-    apt-get upgrade -y
+    apt-get upgrade -y && \
+    # Generate required locale
+    sed -i '/en_US.UTF-8/s/^# //' /etc/locale.gen && \
+    locale-gen && \
+    update-locale LANG=en_US.UTF-8
 
 #########################################
 
@@ -65,14 +69,16 @@ RUN groupadd -r sdcli -g 1000 \
 
 FROM user_deps AS docker_cli_deps
 # https://docs.docker.com/engine/install/debian/
-ENV DOCKER_PACKAGE_VERSION=5:27.5.1-1~debian.11~bullseye
-ENV COMPOSE_PLUGIN_PACKAGE_VERSION=2.33.1-1~debian.11~bullseye
-ENV COMPOSE_PACKAGE_VERSION=1.25.0-1
+ENV DOCKER_PACKAGE_VERSION=5:27.5.1-1~debian.12~bookworm
+ENV COMPOSE_PLUGIN_PACKAGE_VERSION=2.33.1-1~debian.12~bookworm
+ENV COMPOSE_PACKAGE_VERSION=1.29.2-3
 # comes from curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o - > docker-archive-keyring.gpg
 ADD docker-archive-keyring.gpg /usr/share/keyrings/
 ADD docker-apt.list /etc/apt/sources.list.d/docker.list
 # we need cli only, not deamon
-RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION} docker-compose-plugin=${COMPOSE_PLUGIN_PACKAGE_VERSION} docker-compose=${COMPOSE_PACKAGE_VERSION} \
+RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION} \
+    docker-compose-plugin=${COMPOSE_PLUGIN_PACKAGE_VERSION} \
+    docker-compose=${COMPOSE_PACKAGE_VERSION} \
     && rm -rf /var/lib/apt/lists/*
 
 #########################################

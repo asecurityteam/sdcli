@@ -1,6 +1,6 @@
 FROM local/test/sdcli
 USER root
-RUN pip3 install pytest-testinfra
+RUN apt-get update && apt-get -y install python3-testinfra
 RUN mkdir /test
 ADD *.py /test/
 WORKDIR /test/
