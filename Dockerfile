@@ -1,7 +1,6 @@
-FROM golang:1.23.0-bullseye AS BASE
+FROM golang:1.23.0-bullseye AS base
 
 ENV APT_MAKE_VERSION=4.3-4.1 \
-    APT_GCC_VERSION=4:10.2.1-1 \
     APT_GIT_VERSION=1:2.30.2-1+deb11u4 \
     LANG=C.UTF-8
 
@@ -16,7 +15,6 @@ RUN apt-get update && \
     ca-certificates \
     curl \
     make=${APT_MAKE_VERSION} \
-    gcc=${APT_GCC_VERSION} \
     git=${APT_GIT_VERSION} \
     bc \
     jq \
@@ -42,26 +40,9 @@ ADD nodesource.gpg /usr/share/keyrings/
 ADD nodesource-apt.list /etc/apt/sources.list.d/nodesource.list
 RUN apt-get -y update && apt-get install -y nodejs
 
-
 #########################################
 
-FROM js_deps AS python_deps
-
-ENV PIPENV_VENV_IN_PROJECT 1
-
-RUN apt-get install -y locales python3-distutils python3-pip
-RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
-    && locale-gen
-RUN python3 -mpip install -U pipenv==2024.1.0
-ADD python/* /python/
-WORKDIR /python/
-# this allows to use advanced features of pipenv while still using pip to install actual requirements globally
-RUN pipenv requirements > requirements.txt && python3 -m pip install -U -r requirements.txt && rm /python/* && rmdir /python
-WORKDIR /
-
-#########################################
-
-FROM python_deps AS ssh_deps
+FROM js_deps AS ssh_deps
 
 # Install the bitbucket SSH host
 RUN mkdir -p /home/sdcli/.ssh
@@ -98,7 +79,6 @@ RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION}
 
 FROM docker_cli_deps
 
-RUN mkdir -p /home/sdcli/oss-templates/
 COPY ./commands/* /usr/bin/
 
 USER sdcli
