@@ -1,4 +1,4 @@
-FROM golang:1.23.0-bullseye AS BASE
+FROM golang:1.24.4-bullseye AS BASE
 
 ENV APT_MAKE_VERSION=4.3-4.1 \
     APT_GCC_VERSION=4:10.2.1-1 \
