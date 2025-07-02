@@ -1,8 +1,8 @@
-FROM golang:1.23.0-bullseye AS BASE
+FROM golang:1.24.4-bullseye AS base
 
 ENV APT_MAKE_VERSION=4.3-4.1 \
     APT_GCC_VERSION=4:10.2.1-1 \
-    APT_GIT_VERSION=1:2.30.2-1+deb11u3 \
+    APT_GIT_VERSION=1:2.30.2-1+deb11u4 \
     LANG=C.UTF-8
 
 #########################################
@@ -47,7 +47,7 @@ RUN apt-get -y update && apt-get install -y nodejs
 
 FROM js_deps AS python_deps
 
-ENV PIPENV_VENV_IN_PROJECT 1
+ENV PIPENV_VENV_IN_PROJECT=1
 
 RUN apt-get install -y locales python3-distutils python3-pip
 RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
