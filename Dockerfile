@@ -47,7 +47,7 @@ RUN apt-get -y update && apt-get install -y nodejs
 
 FROM js_deps AS python_deps
 
-ENV PIPENV_VENV_IN_PROJECT 1
+ENV PIPENV_VENV_IN_PROJECT=1
 
 RUN apt-get install -y locales python3-distutils python3-pip
 RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
