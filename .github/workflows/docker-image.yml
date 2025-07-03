@@ -63,6 +63,5 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64/v8
           push: ${{ github.event_name != 'pull_request' }}
-          load: ${{ github.event_name == 'pull_request' }}
           tags: ${{ steps.METAID.outputs.tags }}
           labels: ${{ steps.METAID.outputs.labels }}
