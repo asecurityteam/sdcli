@@ -3,9 +3,9 @@ module github.com/asecurityteam/sdcli
 go 1.24.4
 
 require (
-	github.com/AlekSi/gocov-xml v1.1.0
-	github.com/axw/gocov v1.1.0
-	github.com/golangci/golangci-lint v1.60.1
+	github.com/AlekSi/gocov-xml v1.2.0
+	github.com/axw/gocov v1.2.1
+	github.com/golangci/golangci-lint/v2 v2.3.1
 	github.com/wadey/gocovmerge v0.0.0-20160331181800-b5bfa59ec0ad
 )
 
