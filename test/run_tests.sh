@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 docker build -t local/test/sdcli .
 docker build -t local/test/sdclitests test
