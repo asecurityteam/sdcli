@@ -1,6 +1,9 @@
 FROM golang:1.24.5-bookworm AS base
 
 ENV LANG=en_US.UTF-8
+ENV DEBIAN_FRONTEND=noninteractive
+
+COPY apt.conf /etc/apt/apt.conf.d/99-sdcli-local
 
 #########################################
 
@@ -8,7 +11,7 @@ FROM base AS system_deps
 
 # Install apt dependencies
 RUN apt-get update && \
-    apt-get install -y \
+    apt-get install \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -19,7 +22,8 @@ RUN apt-get update && \
     yamllint \  
     locales\  
     unzip && \
-    apt-get upgrade -y && \
+    apt-get upgrade && \
+    rm -rf /var/lib/apt/lists/* && \
     # Generate required locale
     sed -i '/en_US.UTF-8/s/^# //' /etc/locale.gen && \
     locale-gen && \
@@ -42,7 +46,7 @@ FROM go_deps AS js_deps
 # Install NPM
 ADD nodesource.gpg /usr/share/keyrings/
 ADD nodesource-apt.list /etc/apt/sources.list.d/nodesource.list
-RUN apt-get -y update && apt-get install -y nodejs
+RUN apt-get update && apt-get install nodejs && rm -rf /var/lib/apt/lists/*
 
 #########################################
 
@@ -76,7 +80,7 @@ ENV COMPOSE_PACKAGE_VERSION=1.29.2-3
 ADD docker-archive-keyring.gpg /usr/share/keyrings/
 ADD docker-apt.list /etc/apt/sources.list.d/docker.list
 # we need cli only, not deamon
-RUN apt-get update && apt-get -y install docker-ce-cli=${DOCKER_PACKAGE_VERSION} \
+RUN apt-get update && apt-get install docker-ce-cli=${DOCKER_PACKAGE_VERSION} \
     docker-compose-plugin=${COMPOSE_PLUGIN_PACKAGE_VERSION} \
     docker-compose=${COMPOSE_PACKAGE_VERSION} \
     && rm -rf /var/lib/apt/lists/*
