@@ -1,4 +1,4 @@
-FROM golang:1.23.0-bookworm AS base
+FROM golang:1.24.5-bookworm AS base
 
 ENV LANG=en_US.UTF-8
 
