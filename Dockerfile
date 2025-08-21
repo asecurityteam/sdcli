@@ -20,7 +20,8 @@ RUN apt-get update && \
     git=${APT_GIT_VERSION} \
     bc \
     jq \
-    unzip && \
+    unzip \
+    libc6 && \
     apt-get upgrade -y
 
 #########################################
