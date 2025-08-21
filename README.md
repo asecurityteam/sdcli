@@ -58,7 +58,7 @@ docker run -ti \
     # Adjust the container workspace to the newly mounted project.
     -w "/go/src/${project_path}" \
     # Run a command.
-    asecurityteam/sdcli:v1 go test
+    asecurityteam/sdcli:v3 go test
 ```
 
 To make this easier, you can add this function to your .bashrc file (omit the first `--mount` if on Mac):
@@ -79,7 +79,7 @@ sdcli() {
         --env "SSH_AUTH_SOCK=/ssh-agent" \
         --mount src="$(pwd -L)",target="/go/src/${project_path}",type="bind" \
         -w "/go/src/${project_path}" \
-        asecurityteam/sdcli:v1 "$@"
+        asecurityteam/sdcli:v3 "$@"
 }
 ```
 
@@ -102,7 +102,7 @@ docker run -ti \
     # Adjust the container workspace to the newly mounted project.
     -w "/go/src/${project_path}" \
     # Run a command.
-    asecurityteam/sdcli:v1 go lint
+    asecurityteam/sdcli:v3 go lint
 ```
 
 Or, if you've already added the sdcli bash function to your .bashrc file, you can simply type:
@@ -134,7 +134,7 @@ function sdcli
   docker run --rm \
     --mount src="$cwd",target="/go/src/$project_path",type="bind" \
     -w "/go/src/$project_path" \
-    asecurityteam/sdcli:v1 $argv
+    asecurityteam/sdcli:v3 $argv
 end
 ```
 
@@ -155,7 +155,7 @@ docker run -it \
     --entrypoint "/bin/bash" \
     --mount src="$cwd",target="/go/src/$project_path",type="bind" \
     -w "/go/src/$project_path" \
-    asecurityteam/sdcli:v1
+    asecurityteam/sdcli:v3
 ```
 
 <a id="markdown-adding-commands" name="adding-commands"></a>
