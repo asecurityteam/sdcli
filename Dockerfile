@@ -1,4 +1,4 @@
-FROM golang:1.24.5-bookworm AS base
+FROM golang:1.24.6-trixie AS base
 
 ENV LANG=en_US.UTF-8
 ENV DEBIAN_FRONTEND=noninteractive
@@ -21,7 +21,9 @@ RUN apt-get update && \
     jq \
     yamllint \  
     locales\  
-    unzip && \
+    unzip \
+    docker-cli \
+    docker-compose && \
     apt-get upgrade && \
     rm -rf /var/lib/apt/lists/* && \
     # Generate required locale
@@ -36,21 +38,15 @@ FROM system_deps AS go_deps
 ADD golang/* /go-tools/
 ADD defaults/.golangci.yaml /defaults/.golangci.yaml
 WORKDIR /go-tools
-RUN go mod download && grep _ tools.go | awk -F'"' '{print $2}' | xargs -tI % go install % && cd .. && rm /go-tools/* && rmdir /go-tools
+# golangci-lint specifically asks to not use go tool and similar...
+RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.4.0
+RUN go mod download && grep _ tools.go | grep -v golangci-lint | awk -F'"' '{print $2}' | xargs -tI % go install % && cd .. && rm /go-tools/* && rmdir /go-tools
 WORKDIR /
 
-#########################################
-
-FROM go_deps AS js_deps
-
-# Install NPM
-ADD nodesource.gpg /usr/share/keyrings/
-ADD nodesource-apt.list /etc/apt/sources.list.d/nodesource.list
-RUN apt-get update && apt-get install nodejs && rm -rf /var/lib/apt/lists/*
 
 #########################################
 
-FROM js_deps AS ssh_deps
+FROM go_deps AS ssh_deps
 
 # Install the bitbucket SSH host
 RUN mkdir -p /home/sdcli/.ssh
@@ -68,27 +64,6 @@ RUN groupadd -r sdcli -g 1000 \
     && chown -R sdcli:sdcli /go \
     && chown -R sdcli:sdcli /home/sdcli \
     && chown -R sdcli:sdcli /usr/local
-
-#########################################
-
-FROM user_deps AS docker_cli_deps
-# https://docs.docker.com/engine/install/debian/
-ENV DOCKER_PACKAGE_VERSION=5:27.5.1-1~debian.12~bookworm
-ENV COMPOSE_PLUGIN_PACKAGE_VERSION=2.33.1-1~debian.12~bookworm
-ENV COMPOSE_PACKAGE_VERSION=1.29.2-3
-# comes from curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o - > docker-archive-keyring.gpg
-ADD docker-archive-keyring.gpg /usr/share/keyrings/
-ADD docker-apt.list /etc/apt/sources.list.d/docker.list
-# we need cli only, not deamon
-RUN apt-get update && apt-get install docker-ce-cli=${DOCKER_PACKAGE_VERSION} \
-    docker-compose-plugin=${COMPOSE_PLUGIN_PACKAGE_VERSION} \
-    docker-compose=${COMPOSE_PACKAGE_VERSION} \
-    && rm -rf /var/lib/apt/lists/*
-
-#########################################
-
-FROM docker_cli_deps
-
 COPY ./commands/* /usr/bin/
 
 USER sdcli
