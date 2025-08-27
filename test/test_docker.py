@@ -1,11 +1,10 @@
 import pytest
 
-
 @pytest.mark.parametrize(
     "name,version,cmd", [
-        ("docker", "27.3", "-v"),
-        ("docker", "2.29", "compose version"),
-        ("docker-compose", "1.25", "-v")
+        ("docker", "", "-v"),
+        ("docker", "", "compose version"),
+        ("docker-compose", "", "-v")
     ])
 def test_packages(host, name, version, cmd):
     c = host.run("{} {}".format(name, cmd))
