@@ -1,6 +1,6 @@
 module github.com/asecurityteam/sdcli
 
-go 1.24.4
+go 1.25.0
 
 require (
 	github.com/AlekSi/gocov-xml v1.2.0
