@@ -1,4 +1,4 @@
-FROM golang:1.25.0-trixie AS base
+FROM golang:1.25.1-trixie AS base
 
 ENV LANG=en_US.UTF-8
 ENV DEBIAN_FRONTEND=noninteractive
