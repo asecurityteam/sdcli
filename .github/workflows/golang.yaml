@@ -6,7 +6,7 @@ jobs:
     name: GoLang Basics
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: FS Permissions
         # workaround for permissions with contaner attempting to create directories
         run: chmod 777 -R "$(pwd)"
