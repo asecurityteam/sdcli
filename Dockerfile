@@ -1,4 +1,4 @@
-FROM golang:1.26.2 AS base
+FROM golang:1.26.3 AS base
 
 ENV LANG=en_US.UTF-8
 ENV DEBIAN_FRONTEND=noninteractive
@@ -40,7 +40,7 @@ ADD defaults/.golangci.yaml /defaults/.golangci.yaml
 WORKDIR /go-tools
 # golangci-lint specifically asks to not use go tool and similar...
 RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.12.1
-RUN GOFLAGS="-p=1" GOMAXPROCS=1 go mod download && grep _ tools.go | grep -v golangci-lint | awk -F'"' '{print $2}' | xargs -tI % env GOFLAGS="-p=1" GOMAXPROCS=1 go install % && cd .. && rm /go-tools/* && rmdir /go-tools
+RUN GOFLAGS="-p=1" GOMAXPROCS=1 GOGC=off go mod download && grep _ tools.go | grep -v golangci-lint | awk -F'"' '{print $2}' | xargs -tI % env GOFLAGS="-p=1" GOMAXPROCS=1 GOGC=off go install % && cd .. && rm /go-tools/* && rmdir /go-tools
 WORKDIR /
 
 
