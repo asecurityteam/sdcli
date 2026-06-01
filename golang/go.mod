@@ -1,6 +1,6 @@
 module github.com/asecurityteam/sdcli
 
-go 1.25.0
+go 1.26.3
 
 require (
 	github.com/AlekSi/gocov-xml v1.2.0
@@ -11,7 +11,7 @@ require (
 require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
-	golang.org/x/mod v0.26.0 // indirect
-	golang.org/x/sync v0.16.0 // indirect
-	golang.org/x/tools v0.35.0 // indirect
+	golang.org/x/mod v0.36.0 // indirect
+	golang.org/x/sync v0.20.0 // indirect
+	golang.org/x/tools v0.45.0 // indirect
 )
